@@ -82,6 +82,20 @@ input[type=range] {
   height: 20px;
 }
 
+/* 現在の経験値の入力欄 */
+.exp-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px; margin-top: 12px; font-size: 0.78rem; color: var(--muted);
+}
+.exp-input {
+  width: 74px; padding: 5px 7px; font-size: 0.95rem; font-family: inherit;
+  text-align: right; color: var(--text); background: var(--base-100);
+  border: 1px solid var(--base-300); border-radius: 8px;
+}
+.exp-input:focus { outline: 2px solid var(--primary); outline-offset: -1px; }
+.exp-input:disabled { background: var(--base-200); color: var(--muted); }
+.exp-row-max { white-space: nowrap; }
+
 /* ===== 設定の行（経験値タイプ など） ===== */
 .row {
   display: flex;
@@ -231,6 +245,14 @@ footer ul { padding-left: 1.2em; margin: 0; }
         <button class="btn" id="curPlus" aria-label="現在のレベルを1上げる">＋</button>
       </div>
       <input type="range" id="curRange" min="1" max="70" value="10" />
+      <div class="exp-row">
+        <span class="exp-row-label">EXP</span>
+        <input type="text" id="curExp" class="exp-input" value="0"
+               inputmode="numeric" pattern="[0-9]*" maxlength="6"
+               autocomplete="off" enterkeyhint="done"
+               aria-label="現在たまっている経験値" />
+        <span class="exp-row-max">/ <span id="curExpMax">345</span></span>
+      </div>
     </div>
 
     <div class="level-box">
@@ -448,6 +470,12 @@ function expToNext(level, expType) {
   return Math.round(TOTAL_EXPS[level] * r) - Math.round(TOTAL_EXPS[level - 1] * r);
 }
 
+/* いまのレベルから次のレベルになるまでの必要経験値（最大レベルなら0） */
+function nextLevelExp() {
+  if (state.cur >= MAX_LEVEL) { return 0; }
+  return expToNext(state.cur, state.expType);
+}
+
 /* 現在のレベルから目標のレベルまでに必要な合計経験値 */
 function totalRequiredExp(cur, tgt, expType) {
   if (cur >= tgt) return 0;
@@ -473,7 +501,7 @@ function simulate(startLevel, opt) {
   var expType      = opt.expType;
 
   var level = startLevel;
-  var carry = 0;                       /* いまのレベルで貯まっている経験値 */
+  var carry = opt.carry || 0;          /* いまのレベルで貯まっている経験値 */
   var candies = 0, shards = 0, boosted = 0;
 
   while (level < targetLevel && candies < candyBudget && level < MAX_LEVEL) {
@@ -512,6 +540,7 @@ function simulate(startLevel, opt) {
 var state = {
   cur: 10,
   tgt: 25,
+  curExp: 0,          /* 現在のレベルで、すでにたまっている経験値 */
   expType: "600",
   nature: "normal",
   boost: false,       /* アメブースト ON/OFF */
@@ -534,9 +563,18 @@ function renderMain() {
   $("curRange").value = state.cur;
   $("tgtRange").value = state.tgt;
 
+  /* 現在の経験値の入力欄。上限は「次のレベルまでの必要EXP - 1」 */
+  var need = nextLevelExp();
+  var maxExp = Math.max(need - 1, 0);
+  if (state.curExp > maxExp) { state.curExp = maxExp; }
+  $("curExpMax").textContent = (need > 0) ? fmt(need) : "－";
+  $("curExp").disabled = (need === 0);
+  if (document.activeElement !== $("curExp")) { $("curExp").value = String(state.curExp); }
+
   var shardMult = state.boost ? (state.mini ? 4 : 5) : 1;
   var res = simulate(state.cur, {
     targetLevel: state.tgt,
+    carry: state.curExp,
     boostedCount: state.boost ? Infinity : 0,
     shardMult: shardMult,
     nature: state.nature,
@@ -545,7 +583,8 @@ function renderMain() {
 
   $("candyOut").textContent = fmt(res.candies);
   $("shardOut").textContent = fmt(res.shards);
-  $("expOut").textContent   = fmt(totalRequiredExp(state.cur, state.tgt, state.expType));
+  $("expOut").textContent   = fmt(Math.max(
+    totalRequiredExp(state.cur, state.tgt, state.expType) - state.curExp, 0));
 
   $("miniChk").disabled = !state.boost;
   $("miniLabel").className = "mini-label" + (state.boost ? " on" : "");
@@ -717,7 +756,7 @@ function renderTsurukame() {
 
   function opts(k) {
     return { targetLevel: tgt, nature: state.nature, expType: state.expType,
-             shardMult: mult, boostedCount: k };
+             carry: state.curExp, shardMult: mult, boostedCount: k };
   }
 
   var allNormal = simulate(cur, opts(0));
@@ -797,6 +836,20 @@ $("curPlus").onclick  = function () { state.cur += 1; clampLevels(); renderAll()
 $("tgtMinus").onclick = function () { state.tgt -= 1; clampLevels(); renderAll(); };
 $("tgtPlus").onclick  = function () { state.tgt += 1; clampLevels(); renderAll(); };
 $("curRange").oninput = function () { state.cur = parseInt(this.value, 10); renderAll(); };
+
+/* 現在の経験値：数字以外は受け付けない */
+$("curExp").oninput = function () {
+  var digits = this.value.replace(/[^0-9]/g, "");
+  var n = parseInt(digits, 10);
+  if (isNaN(n)) { n = 0; }
+  var maxExp = Math.max(nextLevelExp() - 1, 0);
+  if (n > maxExp) { n = maxExp; }
+  state.curExp = n;
+  if (digits !== this.value || String(n) !== digits) { this.value = String(n); }
+  renderAll();
+};
+$("curExp").onblur = function () { this.value = String(state.curExp); };
+$("curExp").onfocus = function () { this.select(); };
 $("tgtRange").oninput = function () { state.tgt = parseInt(this.value, 10); renderAll(); };
 
 /* くっついたボタン（600/900/… など）の共通処理 */
