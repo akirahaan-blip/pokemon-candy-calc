@@ -1,0 +1,13 @@
+# 元の手書き画像は「画像資産」として別フォルダで管理するため、ここでは追跡しない
+# （アイコンは index.html に埋め込み済みなので、この画像が無くてもサイトは動く）
+kame.jpg
+
+# Windows が勝手に作るファイル
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# エディタの一時ファイル
+*.swp
+*~
+.vscode/

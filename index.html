@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>アメ何個いる？(ポケモンスリープ アメ・経験値シミュレータ)</title>
+<meta name="description" content="ポケモンスリープ(Pokémon Sleep)でポケモンのレベルを上げる際に必要なアメの数・ゆめのかけら・経験値を計算します。Ver.3.6.0（レベル上限70）対応。持っているアメを使い切る「鶴亀算」つき。" />
+<!-- 検索エンジンに載せたくない場合はこの行を残す。載せたくなったらこの1行を消す -->
+<meta name="robots" content="noindex" />
+<link rel="icon" type="image/png" href="data:image/png;base64,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" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@400;700;800&display=swap" rel="stylesheet" />
+<style>
+/* ===== 色の設定（元サイトの emerald テーマに合わせています） ===== */
+:root {
+  --primary: #f7867a;        /* コーラルピンク（メインの色） */
+  --primary-dark: #e8685a;
+  --secondary: #a78bfa;      /* うすむらさき */
+  --accent: #e2604a;         /* 濃いコーラル */
+  --base-100: #fffbfa;       /* 背景（ほんのりコーラルの白） */
+  --base-200: #fdeeea;       /* うすいコーラル */
+  --base-300: #f6d3ca;       /* 枠線のコーラル */
+  --text: #4a3a36;           /* 文字色（こげ茶より） */
+  --muted: #b59a94;          /* うすい文字色 */
+  --warning: #fbbd23;        /* ゆめのかけらの色（黄色） */
+  --soft: #fff3f0;           /* 結果ボックスの背景 */
+  --soft-border: #fbd6cd;    /* 結果ボックスの枠線 */
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'M PLUS 1', 'Hiragino Sans', 'Yu Gothic UI', 'Meiryo', sans-serif;
+  color: var(--text);
+  background: var(--base-100);
+  -webkit-text-size-adjust: 100%;
+}
+
+/* ===== 上部の帯（タイトル） ===== */
+.navbar {
+  background: linear-gradient(90deg, #ffdad2, #ffeeea);
+  padding: 12px 16px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+main { max-width: 720px; margin: 0 auto; padding: 16px; }
+
+/* ===== レベル入力（現在のレベル／目標のレベル） ===== */
+.levels { display: flex; justify-content: space-around; gap: 12px; max-width: 560px; margin: 0 auto; }
+.level-box { flex: 1 1 0; max-width: 260px; }
+.level-title { text-align: center; font-size: 0.95rem; }
+.level-row { display: flex; align-items: center; justify-content: center; margin: 12px 0; }
+.level-value { width: 2.2em; text-align: center; font-size: 1.15rem; margin: 0 12px; }
+.level-value.target { color: var(--secondary); font-weight: 700; }
+
+/* ボタン（＋と－） */
+.btn {
+  background: var(--base-200);
+  border: 1px solid var(--base-300);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text);
+  font-family: inherit;
+  touch-action: manipulation;
+  min-width: 40px;
+  min-height: 34px;
+}
+.btn:hover { background: var(--base-300); }
+.btn:active { transform: translateY(1px); }
+
+/* スライダー */
+input[type=range] {
+  width: 100%;
+  accent-color: var(--primary);
+  height: 20px;
+}
+
+/* ===== 設定の行（経験値タイプ など） ===== */
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  max-width: 420px;
+  margin: 16px auto;
+  flex-wrap: wrap;
+}
+.row-label { font-size: 0.95rem; display: flex; align-items: center; gap: 6px; }
+
+/* 「?」の丸ボタン */
+.help-btn {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1px solid var(--base-300); background: var(--base-200);
+  font-size: 0.75rem; line-height: 1; cursor: pointer; color: var(--text);
+  font-family: inherit;
+}
+
+/* くっついたボタン群（600/900/1080/1320 など） */
+.join { display: inline-flex; }
+.join .seg {
+  border: 1px solid var(--base-300);
+  background: var(--base-200);
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: var(--text);
+  font-family: inherit;
+  margin-left: -1px;
+}
+.join .seg:first-child { border-radius: 8px 0 0 8px; margin-left: 0; }
+.join .seg:last-child { border-radius: 0 8px 8px 0; }
+.join .seg.on { background: var(--primary); border-color: var(--primary); color: #fff; font-weight: 700; }
+
+/* ON/OFF スイッチ */
+.switch { position: relative; display: inline-block; width: 48px; height: 26px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider-bg {
+  position: absolute; inset: 0; cursor: pointer;
+  background: var(--base-300); border-radius: 999px; transition: .2s;
+}
+.slider-bg::before {
+  content: ""; position: absolute; height: 20px; width: 20px; left: 3px; top: 3px;
+  background: #fff; border-radius: 50%; transition: .2s;
+}
+.switch input:checked + .slider-bg { background: var(--primary); }
+.switch input:checked + .slider-bg::before { transform: translateX(22px); }
+
+.mini-label { font-size: 0.85rem; color: var(--muted); }
+.mini-label.on { color: var(--text); }
+
+.divider { border: none; border-top: 1px solid var(--base-300); margin: 24px 0; }
+
+/* ===== 計算結果の表示 ===== */
+.result { text-align: center; }
+.result-main { font-size: 2.2rem; font-weight: 800; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.result-sub { margin-top: 10px; line-height: 1.9; }
+.result-sub .tag { font-size: 0.8rem; color: var(--muted); margin-right: 12px; }
+.diamond { color: var(--warning); }
+.exp-tag { font-size: 0.72rem; color: var(--accent); }
+
+/* ===== 鶴亀算のカード ===== */
+.card {
+  border: 1px solid var(--base-300);
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 28px;
+  background: var(--base-100);
+  box-shadow: 0 2px 10px rgba(232, 104, 90, 0.09);
+}
+.card h2 { font-size: 1.1rem; margin: 0 0 6px; display: flex; align-items: center; gap: 8px; }
+.card h2 .kame { height: 40px; width: auto; display: block; flex: none; }
+.card .lead { font-size: 0.85rem; color: #b59a94; line-height: 1.7; margin: 0 0 12px; }
+
+.num-input {
+  width: 110px; padding: 6px 8px; font-size: 1rem; font-family: inherit;
+  border: 1px solid var(--base-300); border-radius: 8px; text-align: right;
+}
+
+.answer {
+  background: var(--soft);
+  border: 1px solid var(--soft-border);
+  border-radius: 10px;
+  padding: 14px;
+  margin-top: 12px;
+  line-height: 1.9;
+}
+.answer.warn { background: #fff7ed; border-color: #fed7aa; }
+.answer.ng   { background: #fef2f2; border-color: #fecaca; }
+.answer .big { font-size: 1.25rem; font-weight: 800; }
+.answer .note-min { font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+.answer .hl-boost  { color: var(--accent); font-weight: 800; }
+.answer .hl-normal { color: var(--secondary); font-weight: 800; }
+
+.inv { border: 1px solid var(--base-300); border-radius: 10px; padding: 10px 12px; margin-top: 4px; }
+.inv-title { font-size: 0.88rem; font-weight: 700; margin-bottom: 8px; }
+.inv-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; flex-wrap: wrap; }
+.inv-name { width: 7.5em; font-size: 0.9rem; }
+.inv-row label { font-size: 0.85rem; display: inline-flex; align-items: center; gap: 4px; }
+.inv-input { width: 68px; padding: 4px 6px; font-size: 0.95rem; font-family: inherit;
+             border: 1px solid var(--base-300); border-radius: 6px; text-align: right; }
+
+.convert { border: 1px solid var(--base-300); border-radius: 10px; padding: 12px 14px; margin-top: 12px; background: var(--soft); line-height: 1.9; }
+.convert .ct { font-weight: 700; margin-bottom: 4px; }
+.convert .line { font-size: 0.92rem; }
+.convert .sub { font-size: 0.78rem; color: #b59a94; }
+
+table.cmp { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 0.85rem; }
+table.cmp th, table.cmp td { border: 1px solid var(--base-300); padding: 6px 8px; text-align: right; }
+table.cmp th { background: var(--base-200); text-align: center; }
+table.cmp td.name { text-align: left; white-space: nowrap; }
+.scroll-x { overflow-x: auto; }
+
+/* 説明のふきだし */
+.note {
+  display: none;
+  background: var(--base-200);
+  border: 1px solid var(--base-300);
+  border-radius: 10px;
+  padding: 12px;
+  margin: 8px auto 0;
+  max-width: 420px;
+  font-size: 0.85rem;
+  line-height: 1.8;
+}
+.note.open { display: block; }
+
+footer { color: var(--muted); font-size: 0.8rem; padding: 0 16px 40px; max-width: 720px; margin: 32px auto 0; line-height: 1.8; }
+footer ul { padding-left: 1.2em; margin: 0; }
+</style>
+</head>
+<body>
+
+<header class="navbar">アメ何個いる？(ポケモンスリープ アメ・経験値シミュレータ)</header>
+
+<main>
+
+  <!-- ===== 現在のレベル／目標のレベル ===== -->
+  <div class="levels">
+    <div class="level-box">
+      <div class="level-title">現在のレベル</div>
+      <div class="level-row">
+        <button class="btn" id="curMinus" aria-label="現在のレベルを1下げる">－</button>
+        <div class="level-value" id="curValue">10</div>
+        <button class="btn" id="curPlus" aria-label="現在のレベルを1上げる">＋</button>
+      </div>
+      <input type="range" id="curRange" min="1" max="70" value="10" />
+    </div>
+
+    <div class="level-box">
+      <div class="level-title">目標のレベル</div>
+      <div class="level-row">
+        <button class="btn" id="tgtMinus" aria-label="目標のレベルを1下げる">－</button>
+        <div class="level-value target" id="tgtValue">25</div>
+        <button class="btn" id="tgtPlus" aria-label="目標のレベルを1上げる">＋</button>
+      </div>
+      <input type="range" id="tgtRange" min="1" max="70" value="25" />
+    </div>
+  </div>
+
+  <!-- ===== 経験値タイプ ===== -->
+  <div class="row">
+    <div class="row-label">
+      経験値タイプ
+      <button class="help-btn" id="expHelpBtn" aria-label="経験値タイプの説明">?</button>
+    </div>
+    <div class="join" id="expTypeGroup">
+      <button class="seg on" data-val="600">600</button>
+      <button class="seg" data-val="900">900</button>
+      <button class="seg" data-val="1080">1080</button>
+      <button class="seg" data-val="1320">1320</button>
+    </div>
+  </div>
+  <div class="note" id="expHelp">
+    <b>600：</b>通常（ほとんどのポケモン）<br />
+    <b>900：</b>ミニリュウ系統、ヨーギラス系統、タツベイ系統<br />
+    <b>1080：</b>ライコウ、エンテイ、スイクン、クレセリア、ラティアス、ラティオス<br />
+    <b>1320：</b>ミュウ、ダークライ<br />
+    <span style="color:#b59a94">※必要な経験値が、600タイプの1.5倍／1.8倍／2.2倍になります。</span>
+  </div>
+
+  <!-- ===== 性格による経験値補正 ===== -->
+  <div class="row">
+    <div class="row-label">
+      性格による経験値補正
+      <button class="help-btn" id="natHelpBtn" aria-label="性格補正の説明">?</button>
+    </div>
+    <div class="join" id="natureGroup">
+      <button class="seg" data-val="down">▼</button>
+      <button class="seg on" data-val="normal">-</button>
+      <button class="seg" data-val="up">▲</button>
+    </div>
+  </div>
+  <div class="note" id="natHelp">
+    ポケモンの「せいかく」によって、アメ1個でもらえる経験値が変わります。<br />
+    <b>▲：</b>EXPが増えやすい性格（1.18倍）<br />
+    <b>-：</b>補正なし<br />
+    <b>▼：</b>EXPが増えにくい性格（0.82倍）
+  </div>
+
+  <!-- ===== アメブースト ===== -->
+  <div class="row">
+    <div class="row-label">
+      アメブースト
+      <button class="help-btn" id="boostHelpBtn" aria-label="アメブーストの説明">?</button>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <span class="mini-label" id="miniLabel">ミニ</span>
+      <input type="checkbox" id="miniChk" disabled />
+      <label class="switch">
+        <input type="checkbox" id="boostChk" />
+        <span class="slider-bg"></span>
+      </label>
+    </div>
+  </div>
+  <div class="note" id="boostHelp">
+    アメで得られる経験値が<b>2倍</b>になる代わりに、アメ1個あたりのゆめのかけらが多くかかります。<br />
+    <b>アメブースト：</b>ゆめのかけら <b>5倍</b>（1日500個まで）<br />
+    <b>ミニアメブースト：</b>ゆめのかけら <b>4倍</b>（1日50個まで）<br />
+    <span style="color:#b59a94">※スイッチをONにするとアメブースト、さらに「ミニ」にチェックを入れるとミニアメブーストの計算になります。</span>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ===== 計算結果 ===== -->
+  <div class="result">
+    <div class="result-main">
+      <svg width="34" height="34" viewBox="0 0 64 64" aria-label="アメ">
+        <ellipse cx="32" cy="32" rx="15" ry="15" fill="#f9a8d4" stroke="#db2777" stroke-width="2.5"/>
+        <path d="M17 32 L4 22 L7 32 L4 42 Z" fill="#f9a8d4" stroke="#db2777" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M47 32 L60 22 L57 32 L60 42 Z" fill="#f9a8d4" stroke="#db2777" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M25 26 Q32 32 25 38" fill="none" stroke="#db2777" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+      <span id="candyOut">0</span> 個
+    </div>
+    <div class="result-sub">
+      <div>
+        <span class="tag">ゆめのかけら</span>
+        <span class="diamond">◆</span>
+        <span id="shardOut">0</span>
+      </div>
+      <div>
+        <span class="tag">目標のレベルまであと</span>
+        <span class="exp-tag">EXP</span>
+        <span id="expOut">0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 鶴亀算 ===== -->
+  <section class="card">
+    <h2><img class="kame" src="data:image/png;base64,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" alt="ナエトル" />鶴亀算：持っているアメを使い切る</h2>
+    <p class="lead">
+      ※上で選んだ「現在のレベル・目標のレベル・経験値タイプ・性格補正」をそのまま使います。
+    </p>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">持っているアメ（そのポケモンのアメ）</div>
+      <div><input type="number" class="num-input" id="ownCandy" value="100" min="0" max="99999" step="1" /> 個</div>
+    </div>
+
+    <div class="inv">
+      <div class="inv-title">持っているアイテム（足りないときの補い方を計算します）</div>
+      <div class="inv-row">
+        <span class="inv-name">ばんのうアメ</span>
+        <label>S<input type="number" class="inv-input" id="invBS" value="0" min="0" max="9999" /></label>
+        <label>M<input type="number" class="inv-input" id="invBM" value="0" min="0" max="9999" /></label>
+        <label>L<input type="number" class="inv-input" id="invBL" value="0" min="0" max="9999" /></label>
+      </div>
+      <div class="inv-row">
+        <span class="inv-name">タイプのアメ</span>
+        <label>S<input type="number" class="inv-input" id="invTS" value="0" min="0" max="9999" /></label>
+        <label>M<input type="number" class="inv-input" id="invTM" value="0" min="0" max="9999" /></label>
+      </div>
+    </div>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">使うアメブーストの種類</div>
+      <div class="join" id="tkBoostGroup">
+        <button class="seg on" data-val="4">ミニ（かけら4倍）</button>
+        <button class="seg" data-val="5">通常（かけら5倍）</button>
+      </div>
+    </div>
+
+    <div id="tkAnswer"></div>
+    <div id="tkConvert"></div>
+
+    <div class="scroll-x">
+      <table class="cmp" id="tkTable"></table>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <ul>
+    <li>このシミュレータは非公式のものです。</li>
+    <li>Ver.3.6.0（レベル上限70）の経験値テーブルに対応しています。</li>
+    <li>アメ1個でもらえる経験値は、Lv.24まで=40／Lv.25〜29=35／Lv.30以上=25 で計算しています。</li>
+    <li>ゆめのかけらの必要量は、そのときのレベルによって変わるため目安としてお使いください。</li>
+    <li>データ出典：ポケモンスリープ攻略・検証 Wiki*「育成/レベル」「育成/経験値タイプ」「アメブースト」</li>
+  </ul>
+</footer>
+
+<script>
+"use strict";
+
+/* =========================================================================
+   1. データ（ポケモンスリープ Ver.3.6.0 時点の数値）
+   ========================================================================= */
+
+/* 累計必要経験値（600タイプ）。TOTAL_EXPS[レベル-1] = そのレベルに到達するまでの合計EXP */
+var TOTAL_EXPS = [
+  0, 54, 125, 233, 361, 525, 727, 971, 1245, 1560,
+  1905, 2281, 2688, 3107, 3536, 3976, 4430, 4899, 5382, 5879,
+  6394, 6931, 7489, 8068, 8668, 9290, 9933, 10598, 11284, 11992,
+  12721, 13469, 14235, 15020, 15823, 16644, 17483, 18340, 19215, 20108,
+  21018, 21946, 22891, 23854, 24834, 25831, 26846, 27878, 28927, 29993,
+  31355, 32917, 34664, 36610, 38805, 41084, 43488, 46021, 48687, 51493,
+  54358, 57280, 60257, 63286, 66363, 69458, 72574, 75718, 78907, 82162
+];
+
+/* アメ1個あたりのゆめのかけら。SHARDS[現在のレベル] = そのレベルのときの1個あたりの値段 */
+var SHARDS = [
+  0, 14, 18, 22, 27, 30, 34, 39, 44, 48,
+  50, 52, 53, 56, 59, 62, 66, 68, 71, 74,
+  78, 81, 85, 88, 92, 95, 100, 105, 111, 117,
+  122, 126, 130, 136, 143, 151, 160, 167, 174, 184,
+  192, 201, 211, 221, 227, 236, 250, 264, 279, 295,
+  309, 323, 338, 356, 372, 391, 437, 486, 538, 593,
+  651, 698, 750, 804, 866, 932, 1004, 1084, 1173, 1272
+];
+
+var MAX_LEVEL = 70;
+var MIN_LEVEL = 1;
+
+/* 経験値タイプごとの倍率 */
+var EXP_TYPE_RATIO = { "600": 1, "900": 1.5, "1080": 1.8, "1320": 2.2 };
+
+/* アメ1個でもらえる経験値。[Lv.24まで, Lv.25〜29, Lv.30以上] */
+var CANDY_EXP = {
+  down:   [33, 29, 21],   /* 下降補正（EXPが増えにくい性格） */
+  normal: [40, 35, 25],   /* 補正なし */
+  up:     [47, 41, 30]    /* 上昇補正（EXPが増えやすい性格） */
+};
+
+/* =========================================================================
+   2. 計算のしくみ
+   ========================================================================= */
+
+/* いまのレベルで、アメ1個からもらえる経験値 */
+function candyExpAt(level, nature) {
+  var table = CANDY_EXP[nature];
+  if (level <= 24) return table[0];
+  if (level <= 29) return table[1];
+  return table[2];
+}
+
+/* レベル level から level+1 になるのに必要な経験値 */
+function expToNext(level, expType) {
+  var r = EXP_TYPE_RATIO[expType];
+  return Math.round(TOTAL_EXPS[level] * r) - Math.round(TOTAL_EXPS[level - 1] * r);
+}
+
+/* 現在のレベルから目標のレベルまでに必要な合計経験値 */
+function totalRequiredExp(cur, tgt, expType) {
+  if (cur >= tgt) return 0;
+  var r = EXP_TYPE_RATIO[expType];
+  return Math.round(TOTAL_EXPS[tgt - 1] * r) - Math.round(TOTAL_EXPS[cur - 1] * r);
+}
+
+/*
+  アメを1個ずつ使っていくシミュレーション。
+    startLevel       : 開始レベル
+    opt.targetLevel  : ここに着いたら終了（省略時は70）
+    opt.candyBudget  : 使えるアメの上限（省略時は無限）
+    opt.boostedCount : 最初の何個をアメブーストで使うか
+    opt.shardMult    : アメブースト時のかけら倍率（4 or 5）
+  返り値: 到達レベル・使ったアメ・かかったかけら など
+*/
+function simulate(startLevel, opt) {
+  var targetLevel  = opt.targetLevel || MAX_LEVEL;
+  var candyBudget  = (opt.candyBudget === undefined) ? Infinity : opt.candyBudget;
+  var boostedCount = opt.boostedCount || 0;
+  var shardMult    = opt.shardMult || 1;
+  var nature       = opt.nature;
+  var expType      = opt.expType;
+
+  var level = startLevel;
+  var carry = 0;                       /* いまのレベルで貯まっている経験値 */
+  var candies = 0, shards = 0, boosted = 0;
+
+  while (level < targetLevel && candies < candyBudget && level < MAX_LEVEL) {
+    var isBoost = (candies < boostedCount);
+    var gain = candyExpAt(level, nature) * (isBoost ? 2 : 1);
+
+    shards += SHARDS[level] * (isBoost ? shardMult : 1);
+    candies += 1;
+    if (isBoost) boosted += 1;
+    carry += gain;
+
+    /* レベルアップの判定 */
+    while (level < targetLevel && level < MAX_LEVEL && carry >= expToNext(level, expType)) {
+      carry -= expToNext(level, expType);
+      level += 1;
+    }
+    if (candies > 500000) break;       /* 念のための安全装置 */
+  }
+
+  return {
+    level: level,
+    carry: carry,
+    candies: candies,
+    shards: shards,
+    boosted: boosted,
+    normal: candies - boosted,
+    reached: (level >= targetLevel),
+    remain: (level < MAX_LEVEL) ? (expToNext(level, expType) - carry) : 0
+  };
+}
+
+/* =========================================================================
+   3. 画面の状態
+   ========================================================================= */
+
+var state = {
+  cur: 10,
+  tgt: 25,
+  expType: "600",
+  nature: "normal",
+  boost: false,       /* アメブースト ON/OFF */
+  mini: false,        /* ミニかどうか */
+  own: 100,           /* 持っているアメ */
+  tkMult: 4,          /* 鶴亀算で使うブーストのかけら倍率 */
+  inv: { bs: 0, bm: 0, bl: 0, ts: 0, tm: 0 }   /* 持っているアイテム */
+};
+
+function $(id) { return document.getElementById(id); }
+function fmt(n) { return Math.round(n).toLocaleString("ja-JP"); }
+
+/* =========================================================================
+   4. 上半分（元サイトと同じ計算）の表示
+   ========================================================================= */
+
+function renderMain() {
+  $("curValue").textContent = state.cur;
+  $("tgtValue").textContent = state.tgt;
+  $("curRange").value = state.cur;
+  $("tgtRange").value = state.tgt;
+
+  var shardMult = state.boost ? (state.mini ? 4 : 5) : 1;
+  var res = simulate(state.cur, {
+    targetLevel: state.tgt,
+    boostedCount: state.boost ? Infinity : 0,
+    shardMult: shardMult,
+    nature: state.nature,
+    expType: state.expType
+  });
+
+  $("candyOut").textContent = fmt(res.candies);
+  $("shardOut").textContent = fmt(res.shards);
+  $("expOut").textContent   = fmt(totalRequiredExp(state.cur, state.tgt, state.expType));
+
+  $("miniChk").disabled = !state.boost;
+  $("miniLabel").className = "mini-label" + (state.boost ? " on" : "");
+}
+
+/* =========================================================================
+   5. 鶴亀算
+   ========================================================================= */
+
+/* =========================================================================
+   足りないアメを、手持ちのアイテムでどう補うか
+   ========================================================================= */
+
+/* 交換レート：アイテム1個で「ポケモンのアメ」何個ぶんになるか */
+var ITEM_RATE = { bs: 3, bm: 20, bl: 100, ts: 4, tm: 25 };
+var ITEM_NAME = {
+  bs: "ばんのうアメ S", bm: "ばんのうアメ M", bl: "ばんのうアメ L",
+  ts: "タイプのアメ S", tm: "タイプのアメ M"
+};
+
+/*
+  ばんのうアメL 以外のアイテムで「ちょうど◯個ぶん」を作れるかを、
+  まとめて調べておく道具をつくる（動的計画法）。
+    ・つくれる合計ごとに、いちばん良い組み合わせを覚えておく
+    ・「良い」の基準は、大きいアメ(M)をなるべく使わない＝小さいアメ(S)を多く使う
+  こうしておくと、Lを何個使うパターンでも一瞬で答えが出せる。
+*/
+function buildFiller(maxNeed, inv) {
+  var INF = 1 << 28;
+  var CAP = Math.min(Math.max(maxNeed, 0) + 30, 8030);
+  var items = [
+    { key: "tm", v: 25, cap: inv.tm, cost: 25 },
+    { key: "bm", v: 20, cap: inv.bm, cost: 20 },
+    { key: "ts", v: 4,  cap: inv.ts, cost: 0 },
+    { key: "bs", v: 3,  cap: inv.bs, cost: 0 }
+  ];
+
+  var dp = new Int32Array(CAP + 1);
+  for (var i = 1; i <= CAP; i++) { dp[i] = INF; }   /* dp[0] は 0 のまま */
+
+  var choice = [];
+  for (var it = 0; it < items.length; it++) {
+    var v = items[it].v, capN = items[it].cap, cost = items[it].cost;
+    var nd = new Int32Array(CAP + 1);
+    var ch = new Int32Array(CAP + 1);
+    for (var s = 0; s <= CAP; s++) {
+      var maxN = Math.min(capN, Math.floor(s / v));
+      var best = INF, bestN = 0;
+      for (var n = 0; n <= maxN; n++) {
+        var prev = dp[s - n * v];
+        if (prev >= INF) { continue; }
+        var val = prev + n * cost;
+        if (val < best) { best = val; bestN = n; }
+      }
+      nd[s] = best; ch[s] = bestN;
+    }
+    dp = nd;
+    choice.push(ch);
+  }
+
+  return {
+    /* need 個ぶん以上で、いちばんむだが少ない組み合わせを返す */
+    query: function (need) {
+      if (need < 0) { need = 0; }
+      if (need > CAP) { return { ok: false }; }
+      var pick = -1;
+      for (var s = need; s <= CAP; s++) {
+        if (dp[s] < INF) { pick = s; break; }
+      }
+      if (pick < 0) { return { ok: false }; }
+      var counts = { tm: 0, bm: 0, ts: 0, bs: 0 };
+      var rest = pick;
+      for (var j = items.length - 1; j >= 0; j--) {
+        var n = choice[j][rest];
+        counts[items[j].key] = n;
+        rest -= n * items[j].v;
+      }
+      return { ok: true, counts: counts, sum: pick };
+    }
+  };
+}
+
+/* 組み合わせを文章にする */
+function planText(row) {
+  var parts = [];
+  if (row.k > 0)      { parts.push("ばんのうアメL " + fmt(row.k) + "個"); }
+  if (row.c.tm > 0)   { parts.push("タイプのアメM " + fmt(row.c.tm) + "個"); }
+  if (row.c.bm > 0)   { parts.push("ばんのうアメM " + fmt(row.c.bm) + "個"); }
+  if (row.c.ts > 0)   { parts.push("タイプのアメS " + fmt(row.c.ts) + "個"); }
+  if (row.c.bs > 0)   { parts.push("ばんのうアメS " + fmt(row.c.bs) + "個"); }
+  return (parts.length ? parts.join(" ＋ ") : "なし") +
+         "（アメ " + fmt(row.sum) + " 個ぶん／" +
+         (row.waste === 0 ? "むだなし" : "むだ " + fmt(row.waste) + " 個") + "）";
+}
+
+/* 「足りないぶんの補い方」の表示をつくる */
+function buildConvert(shortage) {
+  if (shortage <= 0) { return ""; }
+  var inv = state.inv;
+  var hasInv = (inv.bs + inv.bm + inv.bl + inv.ts + inv.tm) > 0;
+
+  var h = '<div class="convert"><div class="ct">足りない ' + fmt(shortage) + ' 個 の補い方</div>';
+
+  if (!hasInv) {
+    /* アイテムを1つも入力していないときは、目安の早見表を出す */
+    h += '<div class="sub">上の「持っているアイテム」を入力すると、手持ちに合わせた組み合わせを出します。</div>';
+    h += '<div class="scroll-x"><table class="cmp">' +
+         '<tr><th>アイテム</th><th>アメ何個ぶん</th><th>これだけで補うなら</th></tr>';
+    var keys = ["bs", "bm", "bl", "ts", "tm"];
+    for (var i = 0; i < keys.length; i++) {
+      h += '<tr><td class="name">' + ITEM_NAME[keys[i]] + '</td>' +
+           '<td>' + ITEM_RATE[keys[i]] + ' 個</td>' +
+           '<td>' + fmt(Math.ceil(shortage / ITEM_RATE[keys[i]])) + ' 個</td></tr>';
+    }
+    h += '</table></div>';
+  } else {
+    var filler = buildFiller(shortage, inv);
+    var maxK = Math.min(inv.bl, Math.ceil(shortage / 100));
+    var rows = [];
+    for (var k = 0; k <= maxK && rows.length < 6; k++) {
+      var pl = filler.query(shortage - 100 * k);
+      if (!pl.ok) { continue; }
+      var sum = 100 * k + pl.sum;
+      rows.push({ k: k, c: pl.counts, sum: sum, waste: sum - shortage });
+    }
+
+    if (rows.length === 0) {
+      var have = inv.bs * 3 + inv.bm * 20 + inv.bl * 100 + inv.ts * 4 + inv.tm * 25;
+      h += '<div class="line">持っているアイテムを全部使っても足りません。<br />' +
+           'アイテム全部で <b>アメ ' + fmt(have) + ' 個ぶん</b>。あと <b>' +
+           fmt(Math.max(shortage - have, 0)) + ' 個ぶん</b> 必要です。</div>';
+    } else {
+      h += '<div class="line" style="margin-bottom:6px">おすすめ：' + planText(rows[0]) + '</div>';
+      if (rows.length > 1) {
+        h += '<div class="sub">ばんのうアメLを使う数を増やすと、小さいアメを減らせます（上の行ほどLを節約）。</div>';
+      }
+      h += '<div class="scroll-x"><table class="cmp"><tr>' +
+           '<th>ばんのうL</th><th>ばんのうM</th><th>ばんのうS</th>' +
+           '<th>タイプM</th><th>タイプS</th><th>合計</th><th>むだ</th></tr>';
+      for (var r = 0; r < rows.length; r++) {
+        var w = rows[r];
+        h += '<tr' + (r === 0 ? ' style="background:#ffe6e0;font-weight:700"' : '') + '>' +
+             '<td>' + fmt(w.k) + '</td><td>' + fmt(w.c.bm) + '</td><td>' + fmt(w.c.bs) + '</td>' +
+             '<td>' + fmt(w.c.tm) + '</td><td>' + fmt(w.c.ts) + '</td>' +
+             '<td>' + fmt(w.sum) + ' 個ぶん</td>' +
+             '<td>' + (w.waste === 0 ? 'なし' : fmt(w.waste) + ' 個') + '</td></tr>';
+      }
+      h += '</table></div>';
+    }
+  }
+
+  h += '<div class="sub" style="margin-top:8px">※ばんのうアメ・タイプのアメは、ボックスにいるポケモンのアメにしか変換できません。</div>';
+  h += '</div>';
+  return h;
+}
+
+function renderTsurukame() {
+  var box   = $("tkAnswer");
+  var conv  = $("tkConvert");
+  var table = $("tkTable");
+  var cur = state.cur, tgt = state.tgt, N = state.own, mult = state.tkMult;
+  conv.innerHTML = "";
+
+  if (tgt <= cur) {
+    box.innerHTML = '<div class="answer warn">目標のレベルが現在のレベル以下です。目標のレベルを上げてください。</div>';
+    table.innerHTML = "";
+    return;
+  }
+
+  function opts(k) {
+    return { targetLevel: tgt, nature: state.nature, expType: state.expType,
+             shardMult: mult, boostedCount: k };
+  }
+
+  var allNormal = simulate(cur, opts(0));
+  var allBoost  = simulate(cur, opts(Infinity));
+
+  var html = "";
+  var mix = null;
+
+  if (N >= allNormal.candies) {
+    var extra = N - allNormal.candies;
+    html = '<div class="answer">' +
+      '<div class="big">アメブースト <span class="hl-boost">0 個</span>' +
+      ' ＋ 通常 <span class="hl-normal">' + fmt(allNormal.candies) + ' 個</span></div>' +
+      (extra > 0 ? '<div class="note-min">アメ ' + fmt(extra) + ' 個あまり</div>' : '') +
+      '</div>';
+  } else if (N < allBoost.candies) {
+    html = '<div class="answer ng">' +
+      '<div class="big">アメが足りません</div>' +
+      '<div class="note-min">Lv.' + tgt + ' まであと ' + fmt(allBoost.candies - N) + ' 個</div>' +
+      '</div>';
+    conv.innerHTML = buildConvert(allBoost.candies - N);
+  } else {
+    /* ---- ここが鶴亀算の本番 ----
+       「最初の k 個をアメブーストで使う」としたとき、必要なアメの総数は
+       k が増えるほど減っていく。総数が N 以下になる、いちばん小さい k を探す。 */
+    var lo = 0, hi = N;
+    while (lo < hi) {
+      var midK = Math.floor((lo + hi) / 2);
+      if (simulate(cur, opts(midK)).candies <= N) { hi = midK; } else { lo = midK + 1; }
+    }
+    mix = simulate(cur, opts(lo));
+    var leftover = N - mix.candies;
+
+    html = '<div class="answer">' +
+      '<div class="big">アメブースト <span class="hl-boost">' + fmt(mix.boosted) + ' 個</span>' +
+      ' ＋ 通常 <span class="hl-normal">' + fmt(mix.normal) + ' 個</span></div>' +
+      (leftover > 0 ? '<div class="note-min">アメ ' + fmt(leftover) + ' 個あまり</div>' : '') +
+      '</div>';
+  }
+
+  box.innerHTML = html;
+
+  /* ---- 比較表 ---- */
+  var rows = [
+    ["全部ふつうに使う", allNormal.candies, allNormal.shards, allNormal.candies <= N],
+    ["全部アメブースト", allBoost.candies, allBoost.shards, allBoost.candies <= N]
+  ];
+  if (mix) {
+    rows.push(["ブースト" + mix.boosted + "個＋通常" + mix.normal + "個", mix.candies, mix.shards, true]);
+  }
+
+  var t = '<tr><th>使い方</th><th>必要なアメ</th><th>ゆめのかけら</th><th>持っているアメで足りる？</th></tr>';
+  for (var i = 0; i < rows.length; i++) {
+    t += '<tr><td class="name">' + rows[i][0] + '</td>' +
+         '<td>' + fmt(rows[i][1]) + ' 個</td>' +
+         '<td>' + fmt(rows[i][2]) + '</td>' +
+         '<td style="text-align:center">' + (rows[i][3] ? "OK" : "×") + '</td></tr>';
+  }
+  table.innerHTML = t;
+}
+
+function renderAll() { renderMain(); renderTsurukame(); }
+
+/* =========================================================================
+   6. ボタンやスライダーの動作
+   ========================================================================= */
+
+function clampLevels() {
+  if (state.cur < MIN_LEVEL) state.cur = MIN_LEVEL;
+  if (state.cur > MAX_LEVEL) state.cur = MAX_LEVEL;
+  if (state.tgt < MIN_LEVEL) state.tgt = MIN_LEVEL;
+  if (state.tgt > MAX_LEVEL) state.tgt = MAX_LEVEL;
+}
+
+$("curMinus").onclick = function () { state.cur -= 1; clampLevels(); renderAll(); };
+$("curPlus").onclick  = function () { state.cur += 1; clampLevels(); renderAll(); };
+$("tgtMinus").onclick = function () { state.tgt -= 1; clampLevels(); renderAll(); };
+$("tgtPlus").onclick  = function () { state.tgt += 1; clampLevels(); renderAll(); };
+$("curRange").oninput = function () { state.cur = parseInt(this.value, 10); renderAll(); };
+$("tgtRange").oninput = function () { state.tgt = parseInt(this.value, 10); renderAll(); };
+
+/* くっついたボタン（600/900/… など）の共通処理 */
+function setupGroup(groupId, onPick) {
+  var group = $(groupId);
+  var segs = group.querySelectorAll(".seg");
+  group.addEventListener("click", function (e) {
+    var btn = e.target.closest(".seg");
+    if (!btn) { return; }
+    for (var i = 0; i < segs.length; i++) { segs[i].classList.remove("on"); }
+    btn.classList.add("on");
+    onPick(btn.getAttribute("data-val"));
+    renderAll();
+  });
+}
+setupGroup("expTypeGroup", function (v) { state.expType = v; });
+setupGroup("natureGroup",  function (v) { state.nature = v; });
+setupGroup("tkBoostGroup", function (v) { state.tkMult = parseInt(v, 10); });
+
+$("boostChk").onchange = function () {
+  state.boost = this.checked;
+  if (!state.boost) { state.mini = false; $("miniChk").checked = false; }
+  renderAll();
+};
+$("miniChk").onchange = function () { state.mini = this.checked; renderAll(); };
+
+$("ownCandy").oninput = function () {
+  var v = parseInt(this.value, 10);
+  state.own = (isNaN(v) || v < 0) ? 0 : v;
+  renderTsurukame();
+};
+
+/* 持っているアイテムの入力欄をつなぐ */
+function setupInv(inputId, key) {
+  $(inputId).oninput = function () {
+    var v = parseInt(this.value, 10);
+    if (isNaN(v) || v < 0) { v = 0; }
+    if (v > 9999) { v = 9999; }
+    state.inv[key] = v;
+    renderTsurukame();
+  };
+}
+setupInv("invBS", "bs");
+setupInv("invBM", "bm");
+setupInv("invBL", "bl");
+setupInv("invTS", "ts");
+setupInv("invTM", "tm");
+
+/* 「?」ボタンで説明を開閉 */
+function setupHelp(btnId, noteId) {
+  $(btnId).onclick = function () { $(noteId).classList.toggle("open"); };
+}
+setupHelp("expHelpBtn", "expHelp");
+setupHelp("natHelpBtn", "natHelp");
+setupHelp("boostHelpBtn", "boostHelp");
+
+/* 最初の表示 */
+renderAll();
+</script>
+
+</body>
+</html>
