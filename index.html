@@ -216,6 +216,9 @@ table.cmp { width: 100%; border-collapse: collapse; margin-top: 14px; font-size:
 table.cmp th, table.cmp td { border: 1px solid var(--base-300); padding: 6px 8px; text-align: right; }
 table.cmp th { background: var(--base-200); text-align: center; }
 table.cmp td.name { text-align: left; white-space: nowrap; }
+/* 「足りる？」の列。足りないときは「× あと◯個」と出す */
+table.cmp td.judge { text-align: center; white-space: nowrap; }
+table.cmp .short { color: var(--accent); font-size: 0.8rem; font-weight: 700; margin-left: 2px; }
 .scroll-x { overflow-x: auto; }
 
 /* 説明のふきだし */
@@ -846,24 +849,28 @@ function renderTsurukame() {
      ブーストの残りが足りているときは「全部アメブースト」、
      足りていないときは「ブーストを残りぶん使い切る」を比較対象にする。 */
   var rows = [
-    ["全部ふつうに使う", allNormal.candies, allNormal.shards, allNormal.candies <= N]
+    ["全部ふつうに使う", allNormal.candies, allNormal.shards]
   ];
   if (limited) {
-    rows.push(["ブースト" + fmt(cap) + "個を使い切る",
-               capBoost.candies, capBoost.shards, capBoost.candies <= N]);
+    rows.push(["ブースト" + fmt(cap) + "個を使い切る", capBoost.candies, capBoost.shards]);
   } else {
-    rows.push(["全部アメブースト", allBoost.candies, allBoost.shards, allBoost.candies <= N]);
+    rows.push(["全部アメブースト", allBoost.candies, allBoost.shards]);
   }
   if (mix) {
-    rows.push(["ブースト" + mix.boosted + "個＋通常" + mix.normal + "個", mix.candies, mix.shards, true]);
+    rows.push(["ブースト" + mix.boosted + "個＋通常" + mix.normal + "個", mix.candies, mix.shards]);
   }
 
   var t = '<tr><th>使い方</th><th>必要なアメ</th><th>ゆめのかけら</th><th>持っているアメで足りる？</th></tr>';
   for (var i = 0; i < rows.length; i++) {
+    /* 足りないときは「×」だけでなく、あと何個いるかも出す */
+    var need  = rows[i][1];
+    var judge = (need <= N)
+      ? "OK"
+      : '× <span class="short">あと ' + fmt(need - N) + ' 個</span>';
     t += '<tr><td class="name">' + rows[i][0] + '</td>' +
-         '<td>' + fmt(rows[i][1]) + ' 個</td>' +
+         '<td>' + fmt(need) + ' 個</td>' +
          '<td>' + fmt(rows[i][2]) + '</td>' +
-         '<td style="text-align:center">' + (rows[i][3] ? "OK" : "×") + '</td></tr>';
+         '<td class="judge">' + judge + '</td></tr>';
   }
   table.innerHTML = t;
 }
