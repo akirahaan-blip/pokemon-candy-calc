@@ -89,7 +89,7 @@ input[type=range] {
   height: 20px;
 }
 
-/* 現在の経験値の入力欄 */
+/* 「つぎのレベルまで あと ◯◯」の入力欄 */
 .exp-row {
   display: flex; align-items: center; justify-content: center;
   gap: 6px; margin-top: 12px; font-size: 0.78rem; color: var(--muted);font-weight:700
@@ -256,11 +256,12 @@ footer ul { padding-left: 1.2em; margin: 0; }
       </div>
       <input type="range" id="curRange" min="1" max="70" value="10" />
       <div class="exp-row">
-        <span class="exp-row-label">EXP</span>
-        <input type="text" id="curExp" class="exp-input" value="0"
+        <span class="exp-row-label">あと</span>
+        <input type="text" id="curExp" class="exp-input" value="345"
                inputmode="numeric" pattern="[0-9]*" maxlength="6"
                autocomplete="off" enterkeyhint="done"
-               aria-label="現在たまっている経験値" />
+               title="ゲームに出ている「つぎのレベルまで あと ◯◯」の数字を入れてください"
+               aria-label="つぎのレベルまでの残り経験値" />
         <span class="exp-row-max">/ <span id="curExpMax">345</span></span>
       </div>
     </div>
@@ -589,13 +590,17 @@ function renderMain() {
   $("curRange").value = state.cur;
   $("tgtRange").value = state.tgt;
 
-  /* 現在の経験値の入力欄。上限は「次のレベルまでの必要EXP - 1」 */
+  /* 経験値の入力欄。ゲームに出ている「つぎのレベルまで あと ◯◯」を入れてもらう。
+     中の計算は今までどおり「たまっているEXP（state.curExp）」で持ち、
+     画面に出すときだけ「必要EXP － たまっているEXP」に直している。 */
   var need = nextLevelExp();
   var maxExp = Math.max(need - 1, 0);
   if (state.curExp > maxExp) { state.curExp = maxExp; }
   $("curExpMax").textContent = (need > 0) ? fmt(need) : "－";
   $("curExp").disabled = (need === 0);
-  if (document.activeElement !== $("curExp")) { $("curExp").value = String(state.curExp); }
+  if (document.activeElement !== $("curExp")) {
+    $("curExp").value = (need > 0) ? String(need - state.curExp) : "0";
+  }
 
   var shardMult = state.boost ? (state.mini ? 4 : 5) : 1;
   var res = simulate(state.cur, {
@@ -894,18 +899,21 @@ $("tgtMinus").onclick = function () { state.tgt -= 1; clampLevels(); renderAll()
 $("tgtPlus").onclick  = function () { state.tgt += 1; clampLevels(); renderAll(); };
 $("curRange").oninput = function () { state.cur = parseInt(this.value, 10); renderAll(); };
 
-/* 現在の経験値：数字以外は受け付けない */
+/* 「つぎのレベルまで あと ◯◯」の欄：数字以外は受け付けない。
+   入れてもらった残りEXPを「たまっているEXP」に直して state に入れる。 */
 $("curExp").oninput = function () {
   var digits = this.value.replace(/[^0-9]/g, "");
+  var need = nextLevelExp();
   var n = parseInt(digits, 10);
-  if (isNaN(n)) { n = 0; }
-  var maxExp = Math.max(nextLevelExp() - 1, 0);
-  if (n > maxExp) { n = maxExp; }
-  state.curExp = n;
-  if (digits !== this.value || String(n) !== digits) { this.value = String(n); }
+  if (isNaN(n)) { n = need; }          /* 空っぽなら「まるまる残っている」扱い */
+  if (n > need) { n = need; }          /* 次のレベルまでの必要EXPより多くは残らない */
+  var rest = Math.max(n, 1);           /* 残り0はありえない（0になった時点でレベルが上がる） */
+  state.curExp = need - rest;
+  /* 数字以外を打った・上限を超えたときだけ、欄の表示を直す（打っている途中は触らない） */
+  if (digits !== this.value || n !== parseInt(digits, 10)) { this.value = String(n); }
   renderAll();
 };
-$("curExp").onblur = function () { this.value = String(state.curExp); };
+$("curExp").onblur = function () { this.value = String(nextLevelExp() - state.curExp); };
 $("curExp").onfocus = function () { this.select(); };
 $("tgtRange").oninput = function () { state.tgt = parseInt(this.value, 10); renderAll(); };
 
