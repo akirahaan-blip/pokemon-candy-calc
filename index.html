@@ -176,7 +176,7 @@ input[type=range] {
   box-shadow: 0 2px 10px rgba(232, 104, 90, 0.09);
 }
 .card h2 { font-size: 1.1rem; margin: 0 0 6px; display: flex; align-items: center; gap: 8px; }
-.card h2 .kame { height: 40px; width: auto; display: block; flex: none; }
+.card h2 .kame, .card h2 .icon { height: 40px; width: auto; display: block; flex: none; }
 .card .lead { font-size: 0.85rem; color: #b59a94; line-height: 1.7; margin: 0 0 12px; }
 
 .num-input {
@@ -207,6 +207,18 @@ input[type=range] {
 .inv-input { width: 68px; padding: 4px 6px; font-size: 0.95rem; font-family: inherit;
              border: 1px solid var(--base-300); border-radius: 6px; text-align: right; }
 
+/* 「足りないときの補い方」を開くボタン */
+.conv-toggle {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  width: 100%; margin-top: 12px; padding: 10px 14px;
+  background: var(--base-200); border: 1px solid var(--base-300); border-radius: 10px;
+  color: var(--text); font-family: inherit; font-weight: inherit; font-size: 0.92rem;
+  text-align: left; cursor: pointer; touch-action: manipulation; min-height: 40px;
+}
+.conv-toggle:hover { background: var(--base-300); }
+.conv-toggle:active { transform: translateY(1px); }
+.conv-arrow { color: var(--primary-dark); font-size: 0.8rem; }
+
 .convert { border: 1px solid var(--base-300); border-radius: 10px; padding: 12px 14px; margin-top: 12px; background: var(--soft); line-height: 1.9; }
 .convert .ct { font-weight:inherit; margin-bottom: 4px; }
 .convert .line { font-size: 0.92rem; }
@@ -214,8 +226,48 @@ input[type=range] {
 
 table.cmp { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 0.85rem; }
 table.cmp th, table.cmp td { border: 1px solid var(--base-300); padding: 6px 8px; text-align: right; }
+/* 文字が1文字ずつ縦に折れて行が間延びするのを防ぐ（はみ出したぶんは横スクロールで見る） */
+table.cmp th, table.cmp td { white-space: nowrap; }
 table.cmp th { background: var(--base-200); text-align: center; }
 table.cmp td.name { text-align: left; white-space: nowrap; }
+
+/* ===== お昼寝島 ===== */
+.nap-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.nap-btns .btn { min-width: 52px; padding: 6px 10px; }
+.nap-add { background: var(--soft); border-color: var(--soft-border); }
+.nap-sub { font-size: 0.8rem; font-weight: 700; min-width: 0; }
+.nap-break { flex-basis: 100%; height: 0; }   /* ここで行を分ける */
+.nap-total { font-size: 0.95rem; }
+.nap-total b { color: var(--accent); font-size: 1.15rem; }
+.nap-count { font-size: 0.78rem; font-weight: 700; color: var(--muted); margin-left: 4px; }
+.nap-log { font-size: 0.75rem; font-weight: 700; color: var(--muted); margin-top: 4px; word-break: break-all; line-height: 1.7; }
+
+/* お昼寝島の答え */
+.nap-answer {
+  border: 1px solid var(--soft-border); background: var(--soft);
+  border-radius: 10px; padding: 12px 14px; margin-top: 12px; text-align: center;
+}
+.nap-answer.done { background: #f0fdf4; border-color: #bbf7d0; }
+.nap-answer .nap-lead { font-size: 0.88rem; }
+.nap-answer .nap-big { font-size: 1.9rem; margin: 4px 0; }
+.nap-answer .nap-big .num { color: var(--accent); }
+.nap-answer .nap-sub2 { font-size: 0.8rem; font-weight: 700; color: var(--muted); margin-top: 4px; }
+
+/* あと何時間 島に置くか */
+.nap-time {
+  border: 1px solid var(--base-300); border-radius: 10px;
+  padding: 12px 14px; margin-top: 10px; text-align: center;
+}
+.nap-time-lead { font-size: 0.85rem; }
+.nap-time-big { font-size: 1.35rem; margin: 4px 0; }
+.nap-time-big .num { color: var(--secondary); }
+.nap-time .nap-sub2 { font-size: 0.8rem; font-weight: 700; color: var(--muted); margin-top: 4px; }
+
+/* 引き算の内訳 */
+table.nap-calc { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.85rem; }
+table.nap-calc td { border-bottom: 1px solid var(--base-300); padding: 6px 4px; }
+table.nap-calc td.v { text-align: right; white-space: nowrap; }
+table.nap-calc tr.total td { border-bottom: none; border-top: 2px solid var(--base-300); }
 /* 「足りる？」の列。足りないときは「× あと◯個」と出す */
 table.cmp td.judge { text-align: center; white-space: nowrap; }
 table.cmp .short { color: var(--accent); font-size: 0.8rem; font-weight: 700; margin-left: 2px; }
@@ -378,21 +430,6 @@ footer ul { padding-left: 1.2em; margin: 0; }
       <div><input type="number" class="num-input" id="ownCandy" value="100" min="0" max="99999" step="1" /> 個</div>
     </div>
 
-    <div class="inv">
-      <div class="inv-title">持っているアイテム（足りないときの補い方を計算します）</div>
-      <div class="inv-row">
-        <span class="inv-name">ばんのうアメ</span>
-        <label>S<input type="number" class="inv-input" id="invBS" value="0" min="0" max="9999" /></label>
-        <label>M<input type="number" class="inv-input" id="invBM" value="0" min="0" max="9999" /></label>
-        <label>L<input type="number" class="inv-input" id="invBL" value="0" min="0" max="9999" /></label>
-      </div>
-      <div class="inv-row">
-        <span class="inv-name">タイプのアメ</span>
-        <label>S<input type="number" class="inv-input" id="invTS" value="0" min="0" max="9999" /></label>
-        <label>M<input type="number" class="inv-input" id="invTM" value="0" min="0" max="9999" /></label>
-      </div>
-    </div>
-
     <div class="row" style="max-width:100%;">
       <div class="row-label">使うアメブーストの種類</div>
       <div class="join" id="tkBoostGroup">
@@ -417,11 +454,102 @@ footer ul { padding-left: 1.2em; margin: 0; }
     </div>
 
     <div id="tkAnswer"></div>
-    <div id="tkConvert"></div>
+    <div id="tkConvertWrap" hidden>
+      <button class="conv-toggle" id="convToggle" aria-expanded="false">
+        <span id="convToggleLabel">足りないときの補い方を見る</span>
+        <span class="conv-arrow" id="convArrow">▼</span>
+      </button>
+      <div class="conv-body" id="convBody" hidden>
+        <div class="inv">
+          <div class="inv-title">持っているアイテム（足りないときの補い方を計算します）</div>
+          <div class="inv-row">
+            <span class="inv-name">ばんのうアメ</span>
+            <label>S<input type="number" class="inv-input" id="invBS" value="0" min="0" max="9999" /></label>
+            <label>M<input type="number" class="inv-input" id="invBM" value="0" min="0" max="9999" /></label>
+            <label>L<input type="number" class="inv-input" id="invBL" value="0" min="0" max="9999" /></label>
+          </div>
+          <div class="inv-row">
+            <span class="inv-name">タイプのアメ</span>
+            <label>S<input type="number" class="inv-input" id="invTS" value="0" min="0" max="9999" /></label>
+            <label>M<input type="number" class="inv-input" id="invTM" value="0" min="0" max="9999" /></label>
+          </div>
+        </div>
+        <div id="tkConvert"></div>
+      </div>
+    </div>
 
     <div class="scroll-x">
       <table class="cmp" id="tkTable"></table>
     </div>
+  </section>
+
+  <!-- ===== お昼寝島 ===== -->
+  <section class="card">
+    <h2><img class="icon" src="data:image/png;base64,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" alt="ゴンベ" />お昼寝島：目標レベルまであと何EXP？</h2>
+    <p class="lead">
+      ※上で選んだ「現在のレベル・目標のレベル・経験値タイプ・性格補正・あと◯◯」をそのまま使います。
+    </p>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">島のポケモンに出ているEXP</div>
+      <div><input type="number" class="num-input" id="napExp" value="0" min="0" max="9999999" step="1" /> EXP</div>
+    </div>
+
+    <div class="inv">
+      <div class="inv-title">ものひろい箱のアメ（拾うたびにボタンを押す）</div>
+      <div class="nap-btns" id="napAddGroup">
+        <button class="btn nap-add" data-val="1">＋1</button>
+        <button class="btn nap-add" data-val="3">＋3</button>
+        <button class="btn nap-add" data-val="5">＋5</button>
+        <div class="nap-break"></div>
+        <button class="btn nap-sub" id="napUndo">ひとつ戻す</button>
+        <button class="btn nap-sub" id="napClear">全部消す</button>
+      </div>
+      <div class="nap-total">合計 <b id="napBoxTotal">0</b> 個 <span class="nap-count" id="napBoxCount"></span></div>
+      <div class="nap-log" id="napBoxLog"></div>
+    </div>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">ほかに持っているアメ</div>
+      <div><input type="number" class="num-input" id="napOwn" value="0" min="0" max="99999" step="1" /> 個</div>
+    </div>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">
+        アメブースト（EXP2倍）
+        <button class="help-btn" id="napBoostHelpBtn" aria-label="この欄のアメブーストの説明">?</button>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="napBoost" />
+        <span class="slider-bg"></span>
+      </label>
+    </div>
+    <div class="note" id="napBoostHelp">
+      ONにすると、上のアメを<b>アメブーストで使う</b>ものとして計算します（アメ1個の経験値が2倍）。<br />
+      <span style="color:#b59a94">※ここのスイッチは、このお昼寝島の欄だけに効きます。ページ上のほうのアメブーストとは別ものです。</span>
+    </div>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">
+        島で1日にもらえるEXP
+        <button class="help-btn" id="napDailyHelpBtn" aria-label="島で1日にもらえるEXPの説明">?</button>
+      </div>
+      <div class="join" id="napDailyGroup">
+        <button class="seg on" data-val="150">ふつう（150）</button>
+        <button class="seg" data-val="600">チケット（600）</button>
+      </div>
+    </div>
+    <div class="note" id="napDailyHelp">
+      お昼寝島では、預けているあいだ<b>1分ごとに少しずつEXPがたまります</b>。<br />
+      <b>ふつう：</b>1日 <b>150</b> EXP<br />
+      <b>リラックスチケットを使ったとき：</b>1日 <b>600</b> EXP<br />
+      <span style="color:#b59a94">
+      ※計算式：もらえるEXP ＝ 1日のEXP × 性格補正 × 預けた分数 ÷ 1440（小数点以下は切り捨て）<br />
+      ※ここでの性格補正は <b>▲（増えやすい）だけ 1.18 倍</b>で、「-」と「▼」はどちらも 1 倍です。
+      アメの計算（▼は0.82倍）とはちがうので注意してください。</span>
+    </div>
+
+    <div id="napAnswer"></div>
   </section>
 
 </main>
@@ -483,6 +611,10 @@ var CANDY_EXP = {
    ========================================================================= */
 
 /* いまのレベルで、アメ1個からもらえる経験値 */
+/* お昼寝島の性格補正。アメとちがい、▲（増えやすい）だけ1.18倍で、
+   「-」と「▼」はどちらも1倍。 */
+var NAP_NATURE = { up: 1.18, normal: 1, down: 1 };
+
 function candyExpAt(level, nature) {
   var table = CANDY_EXP[nature];
   if (level <= 24) return table[0];
@@ -510,6 +642,19 @@ function totalRequiredExp(cur, tgt, expType) {
 }
 
 /*
+  たまっている経験値のぶんだけ、レベルを進める。
+  （例：Lv.40 で 2000 EXP たまっていたら、Lv.42 と余り◯◯ に直す）
+  targetLevel に着いたらそこで止める。
+*/
+function applyExp(level, carry, targetLevel, expType) {
+  while (level < targetLevel && level < MAX_LEVEL && carry >= expToNext(level, expType)) {
+    carry -= expToNext(level, expType);
+    level += 1;
+  }
+  return { level: level, carry: carry };
+}
+
+/*
   アメを1個ずつ使っていくシミュレーション。
     startLevel       : 開始レベル
     opt.targetLevel  : ここに着いたら終了（省略時は70）
@@ -529,6 +674,7 @@ function simulate(startLevel, opt) {
   var level = startLevel;
   var carry = opt.carry || 0;          /* いまのレベルで貯まっている経験値 */
   var candies = 0, shards = 0, boosted = 0;
+  var gained = 0;                      /* アメでもらえた経験値の合計 */
 
   while (level < targetLevel && candies < candyBudget && level < MAX_LEVEL) {
     var isBoost = (candies < boostedCount);
@@ -538,6 +684,7 @@ function simulate(startLevel, opt) {
     candies += 1;
     if (isBoost) boosted += 1;
     carry += gain;
+    gained += gain;
 
     /* レベルアップの判定 */
     while (level < targetLevel && level < MAX_LEVEL && carry >= expToNext(level, expType)) {
@@ -552,6 +699,7 @@ function simulate(startLevel, opt) {
     carry: carry,
     candies: candies,
     shards: shards,
+    gained: gained,
     boosted: boosted,
     normal: candies - boosted,
     reached: (level >= targetLevel),
@@ -574,6 +722,12 @@ var state = {
   own: 100,           /* 持っているアメ */
   tkMult: 4,          /* 鶴亀算で使うブーストのかけら倍率 */
   tkCap: 50,          /* 鶴亀算で、アメブーストに使えるアメの残り個数 */
+  napExp: 0,          /* お昼寝島：島のポケモンに出ているEXP */
+  napBox: [],         /* お昼寝島：ものひろい箱で拾ったアメ（拾った順に1/3/5が入る） */
+  napOwn: 0,          /* お昼寝島：ほかに持っているアメ */
+  napBoost: false,    /* お昼寝島：アメブーストを使うか */
+  napDaily: 150,      /* お昼寝島：1日にもらえるEXP（チケット使用時は600） */
+  convOpen: false,    /* 「足りないときの補い方」を開いているか */
   inv: { bs: 0, bm: 0, bl: 0, ts: 0, tm: 0 }   /* 持っているアイテム */
 };
 
@@ -717,7 +871,7 @@ function buildConvert(shortage) {
   var inv = state.inv;
   var hasInv = (inv.bs + inv.bm + inv.bl + inv.ts + inv.tm) > 0;
 
-  var h = '<div class="convert"><div class="ct">足りない ' + fmt(shortage) + ' 個 の補い方</div>';
+  var h = '<div class="convert">';
 
   if (!hasInv) {
     /* アイテムを1つも入力していないときは、目安の早見表を出す */
@@ -772,17 +926,36 @@ function buildConvert(shortage) {
   return h;
 }
 
+/* 「足りないときの補い方」の出し入れ。
+   中に「持っているアイテム」の入力欄が入っているので、
+   入力欄そのものは作り直さず、開くか閉じるかだけを切りかえている。 */
+function renderConvert(shortage) {
+  var wrap = $("tkConvertWrap");
+  if (shortage <= 0) {
+    wrap.hidden = true;
+    $("convBody").hidden = true;
+    $("tkConvert").innerHTML = "";
+    return;
+  }
+  wrap.hidden = false;
+  $("convToggleLabel").textContent = "足りない " + fmt(shortage) + " 個 の補い方を見る";
+  $("convToggle").setAttribute("aria-expanded", state.convOpen ? "true" : "false");
+  $("convArrow").textContent = state.convOpen ? "▲" : "▼";
+  $("convBody").hidden = !state.convOpen;
+  $("tkConvert").innerHTML = buildConvert(shortage);
+}
+
 function renderTsurukame() {
   var box   = $("tkAnswer");
-  var conv  = $("tkConvert");
   var table = $("tkTable");
   var cur = state.cur, tgt = state.tgt, N = state.own, mult = state.tkMult;
   var cap = state.tkCap;               /* アメブーストに使えるアメの残り個数 */
-  conv.innerHTML = "";
+  var shortage = 0;                    /* 足りないアメの数（足りていれば0） */
 
   if (tgt <= cur) {
     box.innerHTML = '<div class="answer warn">目標のレベルが現在のレベル以下です。目標のレベルを上げてください。</div>';
     table.innerHTML = "";
+    renderConvert(0);
     return;
   }
 
@@ -826,7 +999,7 @@ function renderTsurukame() {
       '<div class="note-min">' + lead + 'Lv.' + tgt + ' まであと ' +
       fmt(capBoost.candies - N) + ' 個</div>' +
       '</div>';
-    conv.innerHTML = buildConvert(capBoost.candies - N);
+    shortage = capBoost.candies - N;
   } else {
     /* ---- ここが鶴亀算の本番 ----
        「最初の k 個をアメブーストで使う」としたとき、必要なアメの総数は
@@ -849,6 +1022,7 @@ function renderTsurukame() {
   }
 
   box.innerHTML = html;
+  renderConvert(shortage);
 
   /* ---- 比較表 ----
      ブーストの残りが足りているときは「全部アメブースト」、
@@ -880,7 +1054,127 @@ function renderTsurukame() {
   table.innerHTML = t;
 }
 
-function renderAll() { renderMain(); renderTsurukame(); }
+/* =========================================================================
+   5-2. お昼寝島
+   ========================================================================= */
+
+/* 分数を「◯日◯時間◯分」の形にする */
+function fmtMinutes(m) {
+  var d = Math.floor(m / 1440);
+  var h = Math.floor((m % 1440) / 60);
+  var mi = m % 60;
+  var s = "";
+  if (d > 0) { s += fmt(d) + "日"; }
+  if (d > 0 || h > 0) { s += h + "時間"; }
+  s += mi + "分";
+  return s;
+}
+
+/* 日付を「9月8日 14:30」の形にする */
+function fmtWhen(dt) {
+  var hh = ("0" + dt.getHours()).slice(-2);
+  var mm = ("0" + dt.getMinutes()).slice(-2);
+  return (dt.getMonth() + 1) + "月" + dt.getDate() + "日 " + hh + ":" + mm;
+}
+
+/* ものひろい箱で拾ったアメの合計 */
+function napBoxTotal() {
+  var sum = 0;
+  for (var i = 0; i < state.napBox.length; i++) { sum += state.napBox[i]; }
+  return sum;
+}
+
+function renderNap() {
+  var box = $("napAnswer");
+  var cur = state.cur, tgt = state.tgt;
+
+  /* ものひろい箱の表示（合計・回数・拾った順） */
+  var boxSum = napBoxTotal();
+  $("napBoxTotal").textContent = fmt(boxSum);
+  $("napBoxCount").textContent = state.napBox.length > 0
+    ? "（" + state.napBox.length + "回ぶん）" : "";
+  $("napBoxLog").textContent = state.napBox.length > 0
+    ? state.napBox.join(" ＋ ") : "";
+
+  if (tgt <= cur) {
+    box.innerHTML = '<div class="answer warn">目標のレベルが現在のレベル以下です。目標のレベルを上げてください。</div>';
+    return;
+  }
+
+  /* ① 目標レベルまでの残りEXP（画面まん中に出ているのと同じ数） */
+  var baseRemain = Math.max(
+    totalRequiredExp(cur, tgt, state.expType) - state.curExp, 0);
+
+  /* ② 島のポケモンに出ているEXPを反映して、いまのレベルと余りを出し直す */
+  var st = applyExp(cur, state.curExp + state.napExp, tgt, state.expType);
+  var afterIsland = Math.max(
+    totalRequiredExp(st.level, tgt, state.expType) - st.carry, 0);
+  var islandCut = baseRemain - afterIsland;      /* 島のEXPで減ったぶん */
+
+  /* ③ アメ（ものひろい箱 ＋ 持っているぶん）を使う */
+  var candyAll = boxSum + state.napOwn;
+  var res = simulate(st.level, {
+    targetLevel: tgt,
+    carry: st.carry,
+    candyBudget: candyAll,
+    boostedCount: state.napBoost ? Infinity : 0,
+    shardMult: state.napBoost ? 5 : 1,
+    nature: state.nature,
+    expType: state.expType
+  });
+  var afterCandy = res.reached ? 0 : Math.max(
+    totalRequiredExp(res.level, tgt, state.expType) - res.carry, 0);
+  var candyCut = afterIsland - afterCandy;       /* アメで減ったぶん */
+  var candyLeft = candyAll - res.candies;        /* 使わずに済んだアメ */
+
+  /* ---- 答えの表示 ---- */
+  var h = "";
+  if (afterCandy <= 0) {
+    h += '<div class="nap-answer done">' +
+         '<div class="nap-lead">Lv.' + tgt + ' に届きます！</div>' +
+         '<div class="nap-big">目標レベルまで 残り <span class="num">0</span> EXP</div>' +
+         (candyLeft > 0 ? '<div class="nap-sub2">アメが ' + fmt(candyLeft) + ' 個あまります</div>' : '') +
+         '</div>';
+  } else {
+    h += '<div class="nap-answer">' +
+         '<div class="nap-lead">目標レベルまで</div>' +
+         '<div class="nap-big">残り <span class="num">' + fmt(afterCandy) + '</span> EXP</div>' +
+         '<div class="nap-sub2">いまの計算だと Lv.' + res.level + ' までです</div>' +
+         '</div>';
+  }
+
+  /* ---- あと何時間 島に置いておけば届くか ----
+     もらえるEXP ＝ floor(1日のEXP × 性格補正 × 分 ÷ 1440) なので、
+     必要な分数は「残りEXP × 1440 ÷ (1日のEXP × 性格補正)」の切り上げ。 */
+  if (afterCandy > 0) {
+    var rate = state.napDaily * NAP_NATURE[state.nature];   /* 1日にもらえるEXP */
+    var mins = Math.ceil(afterCandy * 1440 / rate);
+    var when = new Date(Date.now() + mins * 60000);
+    h += '<div class="nap-time">' +
+         '<div class="nap-time-lead">このまま島に置いておくなら</div>' +
+         '<div class="nap-time-big">あと <span class="num">' + fmtMinutes(mins) + '</span></div>' +
+         '<div class="nap-sub2">いま預けたままなら、<b>' + fmtWhen(when) + '</b> ごろに引き取ると Lv.' + tgt + ' です</div>' +
+         '<div class="nap-sub2">（1日 ' + fmt(rate) + ' EXP で計算' +
+         (state.nature === "up"   ? '／▲の補正 1.18倍こみ' : '') +
+         (state.nature === "down" ? '／▼の補正は島では効かないので入れていません' : '') +
+         '）</div>' +
+         '</div>';
+  }
+
+  /* ---- 引き算の内訳 ---- */
+  h += '<table class="nap-calc">' +
+       '<tr><td>目標レベルまでの残りEXP</td><td class="v">' + fmt(baseRemain) + '</td></tr>' +
+       '<tr><td>－ 島のポケモンに出ているEXP</td><td class="v">' + fmt(islandCut) + '</td></tr>' +
+       '<tr><td>－ アメ ' + fmt(res.candies) + ' 個ぶん' +
+       (state.napBoost ? '（ブーストあり）' : '') + '</td>' +
+       '<td class="v">' + fmt(candyCut) + '</td></tr>' +
+       '<tr class="total"><td>目標レベルまで 残り</td><td class="v">' + fmt(afterCandy) + '</td></tr>' +
+       '</table>';
+
+  box.innerHTML = h;
+}
+
+function renderAll() { renderMain(); renderTsurukame(); renderNap(); }
 
 /* =========================================================================
    6. ボタンやスライダーの動作
@@ -985,9 +1279,58 @@ setupHelp("expHelpBtn", "expHelp");
 setupHelp("natHelpBtn", "natHelp");
 setupHelp("boostHelpBtn", "boostHelp");
 setupHelp("capHelpBtn", "capHelp");
+setupHelp("napBoostHelpBtn", "napBoostHelp");
+setupHelp("napDailyHelpBtn", "napDailyHelp");
+
+/* 島で1日にもらえるEXP（ふつう150／リラックスチケット600） */
+setupGroup("napDailyGroup", function (v) { state.napDaily = parseInt(v, 10); });
+
+/* 「足りないときの補い方」の開け閉め */
+$("convToggle").onclick = function () {
+  state.convOpen = !state.convOpen;
+  renderTsurukame();
+};
+
+/* ---- お昼寝島 ---- */
+
+/* 島のポケモンに出ているEXP */
+$("napExp").oninput = function () {
+  var v = parseInt(this.value, 10);
+  if (isNaN(v) || v < 0) { v = 0; }
+  if (v > 9999999) { v = 9999999; }
+  state.napExp = v;
+  renderNap();
+};
+
+/* ほかに持っているアメ */
+$("napOwn").oninput = function () {
+  var v = parseInt(this.value, 10);
+  if (isNaN(v) || v < 0) { v = 0; }
+  if (v > 99999) { v = 99999; }
+  state.napOwn = v;
+  renderNap();
+};
+
+/* ものひろい箱：＋1／＋3／＋5 のボタン */
+$("napAddGroup").addEventListener("click", function (e) {
+  var btn = e.target.closest(".nap-add");
+  if (!btn) { return; }
+  if (state.napBox.length >= 999) { return; }   /* 念のための上限 */
+  state.napBox.push(parseInt(btn.getAttribute("data-val"), 10));
+  renderNap();
+});
+$("napUndo").onclick  = function () { state.napBox.pop(); renderNap(); };
+$("napClear").onclick = function () { state.napBox = []; renderNap(); };
+
+/* この欄だけのアメブースト */
+$("napBoost").onchange = function () { state.napBoost = this.checked; renderNap(); };
 
 /* 最初の表示 */
 renderAll();
+
+/* お昼寝島の「◯月◯日 ◯◯:◯◯ ごろ」は、いまの時刻から計算している。
+   ページを開きっぱなしにしても時刻がズレないよう、1分ごとに出し直す。 */
+setInterval(renderNap, 60000);
 </script>
 
 </body>
