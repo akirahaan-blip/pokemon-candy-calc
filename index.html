@@ -238,6 +238,18 @@ table.cmp th, table.cmp td { white-space: nowrap; }
 table.cmp th { background: var(--base-200); text-align: center; }
 table.cmp td.name { text-align: left; white-space: nowrap; }
 
+/* ===== 入力の記憶とリセット ===== */
+.reset-row { max-width: 720px; margin: 28px auto 0; padding: 0 16px; text-align: center; }
+.reset-btn {
+  padding: 10px 18px; border-radius: 10px; cursor: pointer;
+  background: var(--base-100); border: 1px solid var(--base-300);
+  color: var(--muted); font-family: inherit; font-weight: 700; font-size: 0.85rem;
+  touch-action: manipulation; min-height: 40px;
+}
+.reset-btn:hover { background: var(--base-200); color: var(--text); }
+.reset-btn:active { transform: translateY(1px); }
+.reset-note { font-size: 0.78rem; font-weight: 700; color: var(--muted); margin-top: 8px; line-height: 1.7; }
+
 /* ===== お昼寝島 ===== */
 .nap-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
 .nap-btns .btn { min-width: 52px; padding: 6px 10px; }
@@ -563,6 +575,15 @@ footer ul { padding-left: 1.2em; margin: 0; }
     <div id="napAnswer"></div>
   </section>
 
+  <!-- ===== 入力の記憶とリセット ===== -->
+  <div class="reset-row">
+    <button class="reset-btn" id="resetBtn">入力をぜんぶ最初に戻す（リセット）</button>
+    <div class="reset-note">
+      入れた数字は、この端末のブラウザに<b>自動で保存</b>されます。<br />
+      ページを閉じても消えないので、アメを拾うたびに足していけます。
+    </div>
+  </div>
+
 </main>
 
 <footer>
@@ -744,6 +765,110 @@ var state = {
 
 function $(id) { return document.getElementById(id); }
 function fmt(n) { return Math.round(n).toLocaleString("ja-JP"); }
+
+/* =========================================================================
+   3-2. 入力の記憶
+   この端末のブラウザ（localStorage）に、入れた内容を自動で保存する。
+   保存できない設定のブラウザ（プライベートモードなど）でも
+   エラーで止まらないよう、すべて try/catch でくるんでいる。
+   ========================================================================= */
+
+var SAVE_KEY = "pokemon-candy-calc/v1";
+var resetting = false;          /* リセット中は保存しない（消した直後に書き戻さないため） */
+
+/* いま入っている内容を保存する */
+function saveState() {
+  if (resetting) { return; }
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      cur: state.cur, tgt: state.tgt, curExp: state.curExp,
+      expType: state.expType, nature: state.nature,
+      boost: state.boost, mini: state.mini,
+      own: state.own, tkMult: state.tkMult, tkCap: state.tkCap,
+      inv: state.inv,
+      napExp: state.napExp, napBox: state.napBox,
+      napOwn: state.napOwn, napBoost: state.napBoost, napDaily: state.napDaily
+    }));
+  } catch (e) { /* 保存できなくても、そのまま使えるようにする */ }
+}
+
+/* 前回の内容を読み込む。おかしな値は無視して、初期値のままにする */
+function loadState() {
+  var raw = null;
+  try { raw = localStorage.getItem(SAVE_KEY); } catch (e) { return; }
+  if (!raw) { return; }
+  var d;
+  try { d = JSON.parse(raw); } catch (e) { return; }
+  if (!d || typeof d !== "object") { return; }
+
+  function num(v, min, max, def) {
+    var n = parseInt(v, 10);
+    if (isNaN(n) || n < min || n > max) { return def; }
+    return n;
+  }
+
+  state.cur    = num(d.cur, MIN_LEVEL, MAX_LEVEL, state.cur);
+  state.tgt    = num(d.tgt, MIN_LEVEL, MAX_LEVEL, state.tgt);
+  state.curExp = num(d.curExp, 0, 9999999, state.curExp);
+  if (EXP_TYPE_RATIO[d.expType] !== undefined) { state.expType = d.expType; }
+  if (NAP_NATURE[d.nature]      !== undefined) { state.nature  = d.nature; }
+  state.boost  = (d.boost === true);
+  state.mini   = (d.mini === true);
+  state.own    = num(d.own, 0, 99999, state.own);
+  state.tkMult = (num(d.tkMult, 4, 5, state.tkMult) === 5) ? 5 : 4;
+  state.tkCap  = num(d.tkCap, 0, 99999, state.tkCap);
+
+  if (d.inv && typeof d.inv === "object") {
+    var keys = ["bs", "bm", "bl", "ts", "tm"];
+    for (var i = 0; i < keys.length; i++) {
+      state.inv[keys[i]] = num(d.inv[keys[i]], 0, 9999, 0);
+    }
+  }
+
+  state.napExp   = num(d.napExp, 0, 9999999, state.napExp);
+  state.napOwn   = num(d.napOwn, 0, 99999, state.napOwn);
+  state.napBoost = (d.napBoost === true);
+  state.napDaily = (num(d.napDaily, 150, 600, state.napDaily) === 600) ? 600 : 150;
+
+  /* ものひろい箱は 1・3・5 だけが入っているはずなので、それ以外は捨てる */
+  if (Object.prototype.toString.call(d.napBox) === "[object Array]") {
+    var box = [];
+    for (var j = 0; j < d.napBox.length && box.length < 999; j++) {
+      var v = parseInt(d.napBox[j], 10);
+      if (v === 1 || v === 3 || v === 5) { box.push(v); }
+    }
+    state.napBox = box;
+  }
+}
+
+/* 読み込んだ内容を、画面の入力欄やボタンに反映する */
+function applyStateToScreen() {
+  /* くっついたボタン（600/900/… など）の選ばれている印を付け直す */
+  function pickSeg(groupId, val) {
+    var segs = $(groupId).querySelectorAll(".seg");
+    for (var i = 0; i < segs.length; i++) {
+      var on = (segs[i].getAttribute("data-val") === String(val));
+      if (on) { segs[i].classList.add("on"); } else { segs[i].classList.remove("on"); }
+    }
+  }
+  pickSeg("expTypeGroup",  state.expType);
+  pickSeg("natureGroup",   state.nature);
+  pickSeg("tkBoostGroup",  state.tkMult);
+  pickSeg("napDailyGroup", state.napDaily);
+
+  $("boostChk").checked  = state.boost;
+  $("miniChk").checked   = state.mini;
+  $("ownCandy").value    = String(state.own);
+  $("tkBoostCap").value  = String(state.tkCap);
+  $("invBS").value = String(state.inv.bs);
+  $("invBM").value = String(state.inv.bm);
+  $("invBL").value = String(state.inv.bl);
+  $("invTS").value = String(state.inv.ts);
+  $("invTM").value = String(state.inv.tm);
+  $("napExp").value     = String(state.napExp);
+  $("napOwn").value     = String(state.napOwn);
+  $("napBoost").checked = state.napBoost;
+}
 
 /* =========================================================================
    4. 上半分（元サイトと同じ計算）の表示
@@ -1336,8 +1461,24 @@ $("napClear").onclick = function () { state.napBox = []; renderNap(); };
 /* この欄だけのアメブースト */
 $("napBoost").onchange = function () { state.napBoost = this.checked; renderNap(); };
 
-/* 最初の表示 */
+/* 入力をぜんぶ最初に戻す */
+$("resetBtn").onclick = function () {
+  if (!window.confirm("入力した内容をぜんぶ消して、最初の状態に戻します。よろしいですか？")) { return; }
+  resetting = true;                                  /* このあと保存し直さないようにする */
+  try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+  location.reload();
+};
+
+/* 最初の表示（前回の内容があれば読み込んでから出す） */
+loadState();
+applyStateToScreen();
 renderAll();
+
+/* 何か操作するたびに自動で保存する。
+   入力欄・チェック・ボタンのどれを触っても、ここで受け止められる。 */
+document.addEventListener("input",  saveState);
+document.addEventListener("change", saveState);
+document.addEventListener("click",  saveState);
 
 /* お昼寝島の「◯月◯日 ◯◯:◯◯ ごろ」は、いまの時刻から計算している。
    ページを開きっぱなしにしても時刻がズレないよう、1分ごとに出し直す。 */
