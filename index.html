@@ -306,6 +306,124 @@ table.cmp .short { color: var(--accent); font-size: 0.8rem; font-weight: 700; ma
 }
 .note.open { display: block; }
 
+/* ===== タブ（ページ上の切りかえボタン） ===== */
+.tabs {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; gap: 4px; padding: 8px 12px 0;
+  background: var(--base-100); border-bottom: 2px solid var(--primary);
+}
+.tab {
+  flex: 1 1 0; min-width: 0; padding: 10px 2px;
+  border: 1px solid var(--base-300); border-bottom: none; border-radius: 10px 10px 0 0;
+  background: var(--base-200); color: var(--muted);
+  font-family: inherit; font-size: 0.9rem; white-space: nowrap;
+  cursor: pointer; touch-action: manipulation;
+}
+.tab.on { background: var(--primary); border-color: var(--primary); color: #fff; }
+.tab-panel[hidden] { display: none; }
+
+/* お昼寝島タブの「いまの条件」 */
+.nap-cond { font-size: 0.85rem; background: var(--base-200); border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; line-height: 1.7; }
+
+/* ===== アメから逆算 ===== */
+.rv-up { font-size: 0.95rem; color: var(--muted); }
+
+/* ===== アメブ計画表 ===== */
+.plan-head {
+  display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap;
+  padding: 4px 0 12px; border-bottom: 1px solid var(--base-300);
+}
+.plan-kicker { font-size: 0.8rem; font-weight: 700; color: var(--primary-dark); }
+.plan-title {
+  font-family: inherit; font-weight: inherit; font-size: 1.6rem; color: var(--text);
+  border: none; border-bottom: 1px dashed var(--base-300); background: transparent;
+  width: 100%; max-width: 12em; padding: 2px 0;
+}
+.plan-date { display: flex; align-items: baseline; gap: 4px; font-size: 0.95rem; }
+.plan-date input {
+  font-family: inherit; font-weight: inherit; color: var(--text); text-align: right;
+  border: none; border-bottom: 1px dashed var(--base-300); background: transparent; padding: 2px 0;
+}
+.plan-y { width: 3.4em; font-size: 1rem; }
+.plan-m { width: 1.6em; font-size: 1.6rem; }
+.plan-h { font-size: 1.1rem; margin: 26px 0 10px; padding-left: 10px; border-left: 5px solid var(--primary); line-height: 1.3; }
+.plan-lead { font-size: 0.8rem; font-weight: 700; color: var(--muted); line-height: 1.7; margin: -4px 0 8px; }
+
+/* 合計の4つの箱 */
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+@media (max-width: 560px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+.stat { border: 1px solid var(--base-300); border-radius: 12px; padding: 10px 12px; min-width: 0; }
+.stat .k { font-size: 0.8rem; font-weight: 700; color: var(--muted); }
+.stat .v { font-size: 1.5rem; line-height: 1.35; font-variant-numeric: tabular-nums; }
+.stat.s-boost  { background: #fde7f0; }
+.stat.s-unused { background: var(--soft); }
+.stat.s-normal { background: #f1ecff; }
+.stat.s-shard  { background: #fff7dc; }
+.stat .v.over  { color: #dc2626; }
+
+/* 使った割合のバー */
+.meter-box { margin-top: 10px; padding: 10px 14px 12px; border: 1px solid var(--base-300); border-radius: 12px; }
+.meter-top { display: flex; justify-content: space-between; gap: 8px; font-size: 0.85rem; margin-top: 6px; }
+.meter-top .lim { color: var(--muted); }
+.meter { height: 10px; background: var(--base-200); border-radius: 999px; overflow: hidden; margin: 6px 0 2px; }
+.meter > span { display: block; height: 100%; background: var(--primary); border-radius: 999px; }
+.meter.over > span { background: #dc2626; }
+.meter-note { font-size: 0.78rem; font-weight: 700; color: var(--muted); margin-top: 8px; }
+.meter-note.over { color: #dc2626; }
+
+/* 育成リストの表 */
+table.plan { width: 100%; border-collapse: collapse; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+table.plan th, table.plan td { border-bottom: 1px solid var(--base-300); padding: 8px 6px; text-align: right; white-space: nowrap; }
+table.plan th { background: var(--base-200); font-size: 0.8rem; font-weight: 700; }
+table.plan td.pn { text-align: left; }
+table.plan td.lv { text-align: center; }
+table.plan tr.sum td { border-top: 2px solid var(--primary); border-bottom: none; color: var(--primary-dark); }
+.nat-badge { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 1px 5px; border-radius: 6px; margin-left: 6px; vertical-align: 1px; }
+.nat-badge.down { background: #e0e7ff; color: #4338ca; }
+.nat-badge.up   { background: #dcfce7; color: #15803d; }
+.zzz { font-size: 0.7rem; font-weight: 700; color: var(--secondary); margin: 0 3px; vertical-align: 4px; }
+
+/* ポケモンごとの入力カード */
+.pr-list { display: flex; flex-direction: column; gap: 10px; }
+.pr-card { border: 1px solid var(--base-300); border-radius: 12px; padding: 10px 12px; background: var(--base-100); }
+.pr-top { display: flex; gap: 6px; align-items: center; }
+.pr-name {
+  flex: 1; min-width: 0; font-family: inherit; font-weight: inherit; font-size: 1rem; color: var(--text);
+  padding: 6px 8px; border: 1px solid var(--base-300); border-radius: 8px;
+}
+.pr-mini { min-width: 34px; padding: 6px 8px; font-size: 0.8rem; font-weight: 700; }
+.pr-grid { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 8px; font-size: 0.85rem; }
+.pr-f { display: inline-flex; align-items: center; gap: 4px; }
+.pr-in {
+  width: 68px; padding: 4px 6px; font-size: 0.95rem; font-family: inherit; color: var(--text);
+  border: 1px solid var(--base-300); border-radius: 6px; text-align: right;
+}
+.pr-in.lv { width: 52px; }
+.pr-in.sm { width: 56px; }
+.pr-sel { font-family: inherit; font-weight: inherit; font-size: 0.9rem; color: var(--text); padding: 4px; border: 1px solid var(--base-300); border-radius: 6px; background: #fff; }
+.pr-out { margin-top: 8px; font-size: 0.85rem; background: var(--soft); border-radius: 8px; padding: 6px 10px; line-height: 1.7; }
+.pr-out .warn { color: #c2410c; }
+.pr-empty { font-size: 0.85rem; color: var(--muted); text-align: center; padding: 12px; }
+.add-btn {
+  width: 100%; margin-top: 10px; padding: 10px; min-height: 44px;
+  border: 2px dashed var(--base-300); border-radius: 12px; background: transparent;
+  color: var(--primary-dark); font-family: inherit; font-size: 0.95rem; cursor: pointer; touch-action: manipulation;
+}
+.add-btn:hover { background: var(--base-200); }
+
+/* 万能アメ消費量（円グラフと内訳） */
+.item-sum { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.95rem; }
+.item-sum .t { color: var(--muted); }
+.item-wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 12px; }
+.donut { width: 150px; height: 150px; flex: none; margin: 0 auto; }
+.legend { flex: 1 1 260px; display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; min-width: 0; }
+.lg-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; }
+.lg-dot { width: 12px; height: 12px; border-radius: 3px; flex: none; display: inline-block; }
+.lg-name { width: 7.5em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lg-pct { width: 3em; text-align: right; font-variant-numeric: tabular-nums; }
+.chip { font-size: 0.72rem; font-weight: 700; background: var(--base-200); border-radius: 6px; padding: 1px 6px; }
+.lack { font-size: 0.8rem; font-weight: 700; color: #dc2626; }
+
 footer { color: var(--muted); font-size: 0.8rem; padding: 0 16px 40px; max-width: 720px; margin: 32px auto 0; line-height: 1.8;font-weight:700 }
 footer ul { padding-left: 1.2em; margin: 0; }
 </style>
@@ -314,7 +432,18 @@ footer ul { padding-left: 1.2em; margin: 0; }
 
 <header class="navbar">アメ何個いる？(ポケモンスリープ アメ・経験値シミュレータ)</header>
 
+<!-- ===== タブ（押したものだけを下に表示する） ===== -->
+<nav class="tabs" id="tabBar" role="tablist">
+  <button class="tab on" data-tab="calc" role="tab">レベル計算</button>
+  <button class="tab" data-tab="rev" role="tab">アメ逆算</button>
+  <button class="tab" data-tab="nap" role="tab">お昼寝島</button>
+  <button class="tab" data-tab="plan" role="tab">アメブ計画</button>
+</nav>
+
 <main>
+
+  <!-- ===== タブ1：レベル計算（もとからある計算と鶴亀算） ===== -->
+  <div class="tab-panel" id="tab-calc">
 
   <!-- ===== 現在のレベル／目標のレベル ===== -->
   <div class="levels">
@@ -502,12 +631,86 @@ footer ul { padding-left: 1.2em; margin: 0; }
     </div>
   </section>
 
-  <!-- ===== お昼寝島 ===== -->
-  <section class="card">
+  </div><!-- /タブ1 -->
+
+  <!-- ===== タブ2：アメから逆算（アメ◯個で何レベルまで上がるか） ===== -->
+  <div class="tab-panel" id="tab-rev" hidden>
+  <section class="card" style="margin-top:8px">
+    <h2>アメから逆算：このアメで何レベルまで上がる？</h2>
+    <p class="lead">
+      使うアメの数から、何レベルまで上がるかを計算します。<br />
+      ※このタブの入力は、ほかのタブとは別々です。
+    </p>
+
+    <div class="level-box" style="margin:0 auto;">
+      <div class="level-title">今のレベル</div>
+      <div class="level-row">
+        <button class="btn" id="rvCurMinus" aria-label="今のレベルを1下げる">－</button>
+        <div class="level-value" id="rvCurValue">30</div>
+        <button class="btn" id="rvCurPlus" aria-label="今のレベルを1上げる">＋</button>
+      </div>
+      <input type="range" id="rvCurRange" min="1" max="70" value="30" />
+      <div class="exp-row">
+        <span class="exp-row-label">あと</span>
+        <input type="text" id="rvExp" class="exp-input" value="0"
+               inputmode="numeric" pattern="[0-9]*" maxlength="6"
+               autocomplete="off" enterkeyhint="done"
+               title="ゲームに出ている「つぎのレベルまで あと ◯◯」の数字を入れてください"
+               aria-label="つぎのレベルまでの残り経験値" />
+        <span class="exp-row-max">/ <span id="rvExpMax">0</span></span>
+      </div>
+    </div>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">経験値タイプ</div>
+      <div class="join" id="rvExpGroup">
+        <button class="seg on" data-val="600">600</button>
+        <button class="seg" data-val="900">900</button>
+        <button class="seg" data-val="1080">1080</button>
+        <button class="seg" data-val="1320">1320</button>
+      </div>
+    </div>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">性格による経験値補正</div>
+      <div class="join" id="rvNatGroup">
+        <button class="seg" data-val="down">▼</button>
+        <button class="seg on" data-val="normal">-</button>
+        <button class="seg" data-val="up">▲</button>
+      </div>
+    </div>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">使うアメの数</div>
+      <div><input type="number" class="num-input" id="rvCandy" value="500" min="0" max="99999" step="1" inputmode="numeric" /> 個</div>
+    </div>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">アメブースト</div>
+      <div class="join" id="rvBoostGroup">
+        <button class="seg on" data-val="0">使わない</button>
+        <button class="seg" data-val="4">ミニ</button>
+        <button class="seg" data-val="5">通常</button>
+      </div>
+    </div>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">そのうちアメブーストで使う数</div>
+      <div><input type="number" class="num-input" id="rvBoostN" value="0" min="0" max="99999" step="1" inputmode="numeric" /> 個</div>
+    </div>
+
+    <div id="rvAnswer"></div>
+  </section>
+  </div><!-- /タブ2 -->
+
+  <!-- ===== タブ3：お昼寝島 ===== -->
+  <div class="tab-panel" id="tab-nap" hidden>
+  <section class="card" style="margin-top:8px">
     <h2><img class="icon" src="data:image/png;base64,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" alt="ゴンベ" />お昼寝島：目標レベルまであと何EXP？</h2>
     <p class="lead">
-      ※上で選んだ「現在のレベル・目標のレベル・経験値タイプ・性格補正・あと◯◯」をそのまま使います。
+      ※「レベル計算」タブで選んだ「現在のレベル・目標のレベル・経験値タイプ・性格補正・あと◯◯」をそのまま使います。
     </p>
+    <div class="nap-cond" id="napCond"></div>
     <p class="lead caution">
       ※<b>7日間預ける想定</b>の計算です。<br />
       それ以前に引き取ると<b>経験値が半減</b>になるので注意してください。
@@ -574,13 +777,87 @@ footer ul { padding-left: 1.2em; margin: 0; }
 
     <div id="napAnswer"></div>
   </section>
+  </div><!-- /タブ3 -->
 
-  <!-- ===== 入力の記憶とリセット ===== -->
-  <div class="reset-row">
+  <!-- ===== タブ4：アメブ計画表 ===== -->
+  <div class="tab-panel" id="tab-plan" hidden>
+    <div class="plan-head">
+      <div style="flex:1 1 14em; min-width:0;">
+        <div class="plan-kicker">ポケモンスリープ</div>
+        <input class="plan-title" id="planTitle" maxlength="30" aria-label="計画の名前" />
+      </div>
+      <div class="plan-date">
+        <input class="plan-y" id="planYear" type="number" min="2020" max="2100" inputmode="numeric" aria-label="年" />年
+        <input class="plan-m" id="planMon" type="number" min="1" max="12" inputmode="numeric" aria-label="月" />月
+      </div>
+    </div>
+
+    <h3 class="plan-h">計画の設定</h3>
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">使うアメブースト</div>
+      <div class="join" id="planBoostGroup">
+        <button class="seg on" data-val="5">通常（かけら5倍）</button>
+        <button class="seg" data-val="4">ミニ（かけら4倍）</button>
+      </div>
+    </div>
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">
+        アメブーストの上限
+        <button class="help-btn" id="planCapHelpBtn" aria-label="アメブーストの上限の説明">?</button>
+      </div>
+      <div><input type="number" class="num-input" id="planCap" value="3500" min="0" max="99999" inputmode="numeric" /> 個</div>
+    </div>
+    <div class="note" id="planCapHelp" style="max-width:100%;">
+      <b>ホリデーのとき：</b>アメブースト <b>3,500個</b>／ミニアメブースト <b>350個</b><br />
+      <span style="color:#b59a94">※上の「使うアメブースト」を切りかえると、上限もその数に戻ります。ほかの数にしたいときは、ここに直接入れてください。</span>
+    </div>
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">持っているゆめのかけら（空でもOK）</div>
+      <div><input type="number" class="num-input" id="planShards" value="" min="0" max="999999999" inputmode="numeric" style="width:130px" /></div>
+    </div>
+    <div class="inv">
+      <div class="inv-title">持っているばんのうアメ（足りないアメを補うのに使います）</div>
+      <div class="inv-row">
+        <label>S<input type="number" class="inv-input" id="planBS" value="0" min="0" max="9999" inputmode="numeric" /></label>
+        <label>M<input type="number" class="inv-input" id="planBM" value="0" min="0" max="9999" inputmode="numeric" /></label>
+        <label>L<input type="number" class="inv-input" id="planBL" value="0" min="0" max="9999" inputmode="numeric" /></label>
+      </div>
+    </div>
+
+    <h3 class="plan-h">アメ・ゆめのかけら合計</h3>
+    <div id="planSummary"></div>
+
+    <h3 class="plan-h">育成リスト</h3>
+    <div class="scroll-x"><table class="plan" id="planTable"></table></div>
+
+    <h3 class="plan-h">ポケモンごとの入力</h3>
+    <p class="plan-lead">
+      「アメブで使う数」を入れると、目標のレベルまでの残りを通常アメで何個使うか出します。<br />
+      手持ちのアメで足りないぶんは、<b>上のポケモンから順に</b>ばんのうアメを割り当てます（↑↓で順番を変えられます）。<br />
+      タイプのアメは、そのポケモンのタイプのぶんを入れてください。
+    </p>
+    <div id="planRows" class="pr-list"></div>
+    <button class="add-btn" id="planAdd">＋ ポケモンを追加</button>
+
+    <h3 class="plan-h">万能アメ消費量</h3>
+    <div id="planItems"></div>
+
+    <div class="reset-row" style="padding:0;">
+      <button class="reset-btn" id="planClear">計画表をぜんぶ消す</button>
+      <div class="reset-note">
+        計画表は、この端末のブラウザに<b>自動で保存</b>されます。<br />
+        ほかのタブの「リセット」では消えません。
+      </div>
+    </div>
+  </div><!-- /タブ4 -->
+
+  <!-- ===== 入力の記憶とリセット（計画表のタブでは隠す） ===== -->
+  <div class="reset-row" id="resetRow">
     <button class="reset-btn" id="resetBtn">入力をぜんぶ最初に戻す（リセット）</button>
     <div class="reset-note">
       入れた数字は、この端末のブラウザに<b>自動で保存</b>されます。<br />
-      ページを閉じても消えないので、アメを拾うたびに足していけます。
+      ページを閉じても消えないので、アメを拾うたびに足していけます。<br />
+      ※アメブ計画表は、このリセットでは消えません。
     </div>
   </div>
 
@@ -760,8 +1037,18 @@ var state = {
   napBoost: false,    /* お昼寝島：アメブーストを使うか */
   napDaily: 150,      /* お昼寝島：1日にもらえるEXP（チケット使用時は600） */
   convOpen: false,    /* 「足りないときの補い方」を開いているか */
-  inv: { bs: 0, bm: 0, bl: 0, ts: 0, tm: 0 }   /* 持っているアイテム */
+  inv: { bs: 0, bm: 0, bl: 0, ts: 0, tm: 0 },  /* 持っているアイテム */
+  tab: "calc",        /* 開いているタブ（calc / rev / nap / plan） */
+  rvCur: 30,          /* アメ逆算：今のレベル */
+  rvCarry: 0,         /* アメ逆算：今のレベルで、すでにたまっている経験値 */
+  rvExpType: "600",   /* アメ逆算：経験値タイプ */
+  rvNature: "normal", /* アメ逆算：性格補正 */
+  rvCandy: 500,       /* アメ逆算：使うアメの数 */
+  rvMult: 0,          /* アメ逆算：アメブースト（0=使わない／4=ミニ／5=通常） */
+  rvBoostN: 0         /* アメ逆算：そのうちアメブーストで使う数 */
 };
+
+var TAB_NAMES = ["calc", "rev", "nap", "plan"];
 
 function $(id) { return document.getElementById(id); }
 function fmt(n) { return Math.round(n).toLocaleString("ja-JP"); }
@@ -787,9 +1074,14 @@ function saveState() {
       own: state.own, tkMult: state.tkMult, tkCap: state.tkCap,
       inv: state.inv,
       napExp: state.napExp, napBox: state.napBox,
-      napOwn: state.napOwn, napBoost: state.napBoost, napDaily: state.napDaily
+      napOwn: state.napOwn, napBoost: state.napBoost, napDaily: state.napDaily,
+      tab: state.tab,
+      rvCur: state.rvCur, rvCarry: state.rvCarry, rvExpType: state.rvExpType,
+      rvNature: state.rvNature, rvCandy: state.rvCandy,
+      rvMult: state.rvMult, rvBoostN: state.rvBoostN
     }));
   } catch (e) { /* 保存できなくても、そのまま使えるようにする */ }
+  savePlan();          /* アメブ計画表は別の場所に保存する（リセットで消えないように） */
 }
 
 /* 前回の内容を読み込む。おかしな値は無視して、初期値のままにする */
@@ -830,6 +1122,16 @@ function loadState() {
   state.napBoost = (d.napBoost === true);
   state.napDaily = (num(d.napDaily, 150, 600, state.napDaily) === 600) ? 600 : 150;
 
+  if (TAB_NAMES.indexOf(d.tab) >= 0) { state.tab = d.tab; }
+  state.rvCur   = num(d.rvCur, MIN_LEVEL, MAX_LEVEL, state.rvCur);
+  state.rvCarry = num(d.rvCarry, 0, 9999999, state.rvCarry);
+  if (EXP_TYPE_RATIO.hasOwnProperty(d.rvExpType)) { state.rvExpType = d.rvExpType; }
+  if (CANDY_EXP.hasOwnProperty(d.rvNature))       { state.rvNature  = d.rvNature; }
+  state.rvCandy  = num(d.rvCandy, 0, 99999, state.rvCandy);
+  var m = num(d.rvMult, 0, 5, 0);
+  state.rvMult   = (m === 4 || m === 5) ? m : 0;
+  state.rvBoostN = num(d.rvBoostN, 0, 99999, state.rvBoostN);
+
   /* ものひろい箱は 1・3・5 だけが入っているはずなので、それ以外は捨てる */
   if (Object.prototype.toString.call(d.napBox) === "[object Array]") {
     var box = [];
@@ -841,20 +1143,26 @@ function loadState() {
   }
 }
 
+/* くっついたボタン（600/900/… など）の選ばれている印を付け直す */
+function pickSeg(groupId, val) {
+  var segs = $(groupId).querySelectorAll(".seg");
+  for (var i = 0; i < segs.length; i++) {
+    var on = (segs[i].getAttribute("data-val") === String(val));
+    if (on) { segs[i].classList.add("on"); } else { segs[i].classList.remove("on"); }
+  }
+}
+
 /* 読み込んだ内容を、画面の入力欄やボタンに反映する */
 function applyStateToScreen() {
-  /* くっついたボタン（600/900/… など）の選ばれている印を付け直す */
-  function pickSeg(groupId, val) {
-    var segs = $(groupId).querySelectorAll(".seg");
-    for (var i = 0; i < segs.length; i++) {
-      var on = (segs[i].getAttribute("data-val") === String(val));
-      if (on) { segs[i].classList.add("on"); } else { segs[i].classList.remove("on"); }
-    }
-  }
   pickSeg("expTypeGroup",  state.expType);
   pickSeg("natureGroup",   state.nature);
   pickSeg("tkBoostGroup",  state.tkMult);
   pickSeg("napDailyGroup", state.napDaily);
+  pickSeg("rvExpGroup",    state.rvExpType);
+  pickSeg("rvNatGroup",    state.rvNature);
+  pickSeg("rvBoostGroup",  state.rvMult);
+  $("rvCandy").value  = String(state.rvCandy);
+  $("rvBoostN").value = String(state.rvBoostN);
 
   $("boostChk").checked  = state.boost;
   $("miniChk").checked   = state.mini;
@@ -946,21 +1254,39 @@ function buildFiller(maxNeed, inv) {
   var dp = new Int32Array(CAP + 1);
   for (var i = 1; i <= CAP; i++) { dp[i] = INF; }   /* dp[0] は 0 のまま */
 
+  /*
+    アイテムを1種類ずつ足していく。
+    合計 s を「v で割った余り r」ごとに並べると（s = r, r+v, r+2v, …）、
+    「n 個使う」は「n 個前の位置から来る」ことになる。
+    手持ち capN 個までしか使えないので、「直前 capN 個ぶんの中でいちばん良いもの」を
+    すべり窓（前から順に入れて、古いものと負けたものを捨てていく列）で追いかける。
+    アメの数が多くても、合計ごとに1回ずつ見るだけで済むので速い
+    （計画表でポケモンを何匹入れても、入力のたびに固まらないようにするため）。
+  */
   var choice = [];
+  var qIdx = new Int32Array(CAP + 2), qKey = new Int32Array(CAP + 2);
   for (var it = 0; it < items.length; it++) {
     var v = items[it].v, capN = items[it].cap, cost = items[it].cost;
     var nd = new Int32Array(CAP + 1);
     var ch = new Int32Array(CAP + 1);
-    for (var s = 0; s <= CAP; s++) {
-      var maxN = Math.min(capN, Math.floor(s / v));
-      var best = INF, bestN = 0;
-      for (var n = 0; n <= maxN; n++) {
-        var prev = dp[s - n * v];
-        if (prev >= INF) { continue; }
-        var val = prev + n * cost;
-        if (val < best) { best = val; bestN = n; }
+    for (var r = 0; r < v; r++) {
+      var head = 0, tail = 0;
+      for (var j = 0, s = r; s <= CAP; j++, s += v) {
+        /* 位置 j を窓に入れる。同じ良さなら、あとから来た（＝使う数が少ない）方を残す */
+        if (dp[s] < INF) {
+          var key = dp[s] - j * cost;
+          while (tail > head && qKey[tail - 1] >= key) { tail--; }
+          qIdx[tail] = j; qKey[tail] = key; tail++;
+        }
+        /* capN 個より多く使うことになる古い位置は捨てる */
+        while (tail > head && j - qIdx[head] > capN) { head++; }
+        if (tail > head) {
+          nd[s] = qKey[head] + j * cost;
+          ch[s] = j - qIdx[head];
+        } else {
+          nd[s] = INF; ch[s] = 0;
+        }
       }
-      nd[s] = best; ch[s] = bestN;
     }
     dp = nd;
     choice.push(ch);
@@ -986,6 +1312,22 @@ function buildFiller(maxNeed, inv) {
       return { ok: true, counts: counts, sum: pick };
     }
   };
+}
+
+/* 足りない shortage 個を、手持ち inv でどう補うかの候補を、
+   ばんのうアメLが少ない順に最大 limit 通り返す（先頭がおすすめ）。
+   手持ちを全部使っても足りないときは、空っぽの配列を返す。 */
+function fillRows(shortage, inv, limit) {
+  var filler = buildFiller(shortage, inv);
+  var maxK = Math.min(inv.bl, Math.ceil(shortage / 100));
+  var rows = [];
+  for (var k = 0; k <= maxK && rows.length < limit; k++) {
+    var pl = filler.query(shortage - 100 * k);
+    if (!pl.ok) { continue; }
+    var sum = 100 * k + pl.sum;
+    rows.push({ k: k, c: pl.counts, sum: sum, waste: sum - shortage });
+  }
+  return rows;
 }
 
 /* 組み合わせを文章にする */
@@ -1022,15 +1364,7 @@ function buildConvert(shortage) {
     }
     h += '</table></div>';
   } else {
-    var filler = buildFiller(shortage, inv);
-    var maxK = Math.min(inv.bl, Math.ceil(shortage / 100));
-    var rows = [];
-    for (var k = 0; k <= maxK && rows.length < 6; k++) {
-      var pl = filler.query(shortage - 100 * k);
-      if (!pl.ok) { continue; }
-      var sum = 100 * k + pl.sum;
-      rows.push({ k: k, c: pl.counts, sum: sum, waste: sum - shortage });
-    }
+    var rows = fillRows(shortage, inv, 6);
 
     if (rows.length === 0) {
       var have = inv.bs * 3 + inv.bm * 20 + inv.bl * 100 + inv.ts * 4 + inv.tm * 25;
@@ -1224,6 +1558,14 @@ function renderNap() {
   var box = $("napAnswer");
   var cur = state.cur, tgt = state.tgt;
 
+  /* タブが分かれて上の入力が見えないので、いまの条件をここに出しておく */
+  var needNow = nextLevelExp();
+  $("napCond").innerHTML =
+    '<b>いまの条件：</b>Lv.' + cur + ' → Lv.' + tgt +
+    '／' + state.expType + 'タイプ／性格補正 ' + NATURE_MARK[state.nature] +
+    (needNow > 0 ? '／あと ' + fmt(needNow - state.curExp) : '') +
+    '<br /><span style="color:var(--muted);font-weight:700;font-size:0.78rem">変えるときは「レベル計算」タブで</span>';
+
   /* ものひろい箱の表示（合計・回数・拾った順） */
   var boxSum = napBoxTotal();
   $("napBoxTotal").textContent = fmt(boxSum);
@@ -1310,7 +1652,469 @@ function renderNap() {
   box.innerHTML = h;
 }
 
-function renderAll() { renderMain(); renderTsurukame(); renderNap(); }
+/* =========================================================================
+   5-3. アメから逆算（アメ◯個で何レベルまで上がるか）
+   ========================================================================= */
+
+var NATURE_MARK = { down: "▼", normal: "-", up: "▲" };
+
+/* アメ逆算タブの「次のレベルになるまでの必要経験値」（最大レベルなら0） */
+function rvNextExp() {
+  return (state.rvCur >= MAX_LEVEL) ? 0 : expToNext(state.rvCur, state.rvExpType);
+}
+
+function renderReverse() {
+  $("rvCurValue").textContent = state.rvCur;
+  $("rvCurRange").value = state.rvCur;
+
+  /* 「あと ◯◯」の欄（レベル計算タブと同じしくみ） */
+  var need = rvNextExp();
+  var maxExp = Math.max(need - 1, 0);
+  if (state.rvCarry > maxExp) { state.rvCarry = maxExp; }
+  $("rvExpMax").textContent = (need > 0) ? fmt(need) : "－";
+  $("rvExp").disabled = (need === 0);
+  if (document.activeElement !== $("rvExp")) {
+    $("rvExp").value = (need > 0) ? String(need - state.rvCarry) : "0";
+  }
+  $("rvBoostN").disabled = (state.rvMult === 0);
+
+  var box = $("rvAnswer");
+  if (state.rvCur >= MAX_LEVEL) {
+    box.innerHTML = '<div class="answer warn">すでに Lv.' + MAX_LEVEL + '（最大）です。</div>';
+    return;
+  }
+
+  var N = state.rvCandy;
+  /* アメブーストは「使うアメ」の数より多くは使えない */
+  var boosted = (state.rvMult > 0) ? Math.min(state.rvBoostN, N) : 0;
+  function opts(target, budget) {
+    return { targetLevel: target, candyBudget: budget, carry: state.rvCarry,
+             boostedCount: boosted, shardMult: state.rvMult || 1,
+             nature: state.rvNature, expType: state.rvExpType };
+  }
+
+  /* アメを N 個、1個ずつ使ってみる（上限は Lv.70） */
+  var res = simulate(state.rvCur, opts(MAX_LEVEL, N));
+
+  var h = '<div class="answer">' +
+    '<div class="big">Lv.' + state.rvCur + ' → <span class="hl-boost">Lv.' + res.level + '</span>' +
+    ' <span class="rv-up">（＋' + (res.level - state.rvCur) + 'レベル）</span></div>';
+
+  if (res.level < MAX_LEVEL) {
+    h += '<div class="note-min">つぎのレベルまで あと ' + fmt(res.remain) + ' EXP</div>';
+  }
+  if (res.boosted > 0) {
+    h += '<div class="note-min">アメブースト <span class="hl-boost">' + fmt(res.boosted) + ' 個</span>' +
+         ' ＋ 通常 <span class="hl-normal">' + fmt(res.normal) + ' 個</span></div>';
+  }
+  h += '<div class="note-min">ゆめのかけら <span class="diamond">◆</span> ' + fmt(res.shards) + '</div>';
+
+  if (res.level >= MAX_LEVEL) {
+    var left = N - res.candies;
+    h += '<div class="note-min">Lv.' + MAX_LEVEL + '（最大）に届きます' +
+         (left > 0 ? '。アメが ' + fmt(left) + ' 個あまります' : '') + '</div>';
+  } else {
+    /* もう1レベル上げるには、あと何個いるか（足すぶんは通常のアメとして数える） */
+    var toNext = simulate(state.rvCur, opts(res.level + 1, Infinity)).candies - res.candies;
+    h += '<div class="note-min">あと <b>' + fmt(toNext) + ' 個</b>で Lv.' + (res.level + 1) +
+         (boosted > 0 ? '（足すぶんは通常のアメとして計算）' : '') + '</div>';
+  }
+  if (state.rvMult > 0 && state.rvBoostN > N) {
+    h += '<div class="note-min">※アメブーストの数が「使うアメの数」より多いので、' + fmt(N) + ' 個として計算しています</div>';
+  }
+  h += '</div>';
+  box.innerHTML = h;
+}
+
+/* =========================================================================
+   5-4. アメブ計画表
+   ホリデーのアメブースト（3,500個まで／ミニは350個まで）を、
+   どのポケモンに何個使うか計画して、この端末に覚えておく。
+   ほかのタブの入力とは別の場所に保存するので、リセットしても消えない。
+   ========================================================================= */
+
+var PLAN_KEY = "pokemon-candy-calc/plan-v1";
+var PLAN_CAP = { 5: 3500, 4: 350 };    /* ホリデーのときの上限（通常／ミニ） */
+var PLAN_MAX_ROWS = 50;
+
+/* 円グラフの色。ポケモンの並び順に固定で割り当てる（9匹目からは「その他」の灰色） */
+var PLAN_COLORS = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#4a3aa7", "#e34948"];
+var PLAN_OTHER_COLOR = "#b5949f";
+function planColor(i) { return (i < PLAN_COLORS.length) ? PLAN_COLORS[i] : PLAN_OTHER_COLOR; }
+
+function newPlanRow() {
+  return { name: "", cur: 30, tgt: 50, rest: 0, island: 0, expType: "600",
+           nature: "normal", boost: 0, own: 0, ts: 0, tm: 0 };
+}
+
+function defaultPlan() {
+  var now = new Date();
+  return { title: "アメブースト計画", year: now.getFullYear(), mon: now.getMonth() + 1,
+           mult: 5, cap: PLAN_CAP[5], shards: 0,
+           inv: { bs: 0, bm: 0, bl: 0 }, rows: [newPlanRow()] };
+}
+
+var plan = defaultPlan();
+
+/* 数字に直して、min〜max の中におさめる。数字でなければ def */
+function toInt(v, min, max, def) {
+  var n = parseInt(v, 10);
+  if (isNaN(n)) { return def; }
+  return Math.min(Math.max(n, min), max);
+}
+
+/* 画面に名前を出すときに、< や & をそのまま文字として出すための変換 */
+function esc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+                  .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function planRowName(i) {
+  return plan.rows[i].name || ("ポケモン" + (i + 1));
+}
+
+function savePlan() {
+  if (resetting) { return; }
+  try { localStorage.setItem(PLAN_KEY, JSON.stringify(plan)); } catch (e) {}
+}
+
+/* 保存してあった計画を読み込む。おかしな値は初期値に置きかえる */
+function loadPlan() {
+  var raw = null;
+  try { raw = localStorage.getItem(PLAN_KEY); } catch (e) { return; }
+  if (!raw) { return; }
+  var d;
+  try { d = JSON.parse(raw); } catch (e) { return; }
+  if (!d || typeof d !== "object") { return; }
+
+  var p = defaultPlan();
+  if (typeof d.title === "string") { p.title = d.title.slice(0, 30); }
+  p.year   = toInt(d.year, 2020, 2100, p.year);
+  p.mon    = toInt(d.mon, 1, 12, p.mon);
+  p.mult   = (d.mult === 4) ? 4 : 5;
+  p.cap    = toInt(d.cap, 0, 99999, PLAN_CAP[p.mult]);
+  p.shards = toInt(d.shards, 0, 999999999, 0);
+  if (d.inv && typeof d.inv === "object") {
+    p.inv.bs = toInt(d.inv.bs, 0, 9999, 0);
+    p.inv.bm = toInt(d.inv.bm, 0, 9999, 0);
+    p.inv.bl = toInt(d.inv.bl, 0, 9999, 0);
+  }
+  if (Object.prototype.toString.call(d.rows) === "[object Array]") {
+    p.rows = [];
+    for (var i = 0; i < d.rows.length && i < PLAN_MAX_ROWS; i++) {
+      var x = d.rows[i], r = newPlanRow();
+      if (!x || typeof x !== "object") { continue; }
+      if (typeof x.name === "string") { r.name = x.name.slice(0, 20); }
+      r.cur    = toInt(x.cur, MIN_LEVEL, MAX_LEVEL, r.cur);
+      r.tgt    = toInt(x.tgt, MIN_LEVEL, MAX_LEVEL, r.tgt);
+      r.rest   = toInt(x.rest, 0, 9999999, 0);
+      r.island = toInt(x.island, 0, MAX_LEVEL, 0);
+      if (EXP_TYPE_RATIO.hasOwnProperty(x.expType)) { r.expType = x.expType; }
+      if (CANDY_EXP.hasOwnProperty(x.nature))       { r.nature  = x.nature; }
+      r.boost  = toInt(x.boost, 0, 99999, 0);
+      r.own    = toInt(x.own, 0, 99999, 0);
+      r.ts     = toInt(x.ts, 0, 9999, 0);
+      r.tm     = toInt(x.tm, 0, 9999, 0);
+      p.rows.push(r);
+    }
+  }
+  plan = p;
+}
+
+/* 設定の欄に、いまの計画の値を入れる */
+function applyPlanToScreen() {
+  $("planTitle").value  = plan.title;
+  $("planYear").value   = String(plan.year);
+  $("planMon").value    = String(plan.mon);
+  pickSeg("planBoostGroup", plan.mult);
+  $("planCap").value    = String(plan.cap);
+  $("planShards").value = plan.shards > 0 ? String(plan.shards) : "";
+  $("planBS").value = String(plan.inv.bs);
+  $("planBM").value = String(plan.inv.bm);
+  $("planBL").value = String(plan.inv.bl);
+}
+
+/*
+  ポケモン1匹ぶんの計算。
+  「アメブで使う数」だけ先にアメブーストで使い、目標のレベルまでの残りを通常のアメで使う。
+  （レベルが低いうちにアメブーストを使うのがいちばん得なので、鶴亀算と同じ順番）
+*/
+function planRowCalc(r) {
+  var out = { candies: 0, boosted: 0, normal: 0, shards: 0, fullBoost: 0 };
+  if (r.tgt <= r.cur) { return out; }
+  var carry = 0;
+  if (r.rest > 0) {                     /* 「あと ◯◯」が入っていれば、たまっているぶんを差し引く */
+    var need = expToNext(r.cur, r.expType);
+    carry = need - Math.min(r.rest, need);
+  }
+  var o = { targetLevel: r.tgt, carry: carry, nature: r.nature, expType: r.expType,
+            shardMult: plan.mult, boostedCount: r.boost };
+  var res = simulate(r.cur, o);
+  o.boostedCount = Infinity;            /* 「全部アメブ」にしたら何個か（ボタン用） */
+  return { candies: res.candies, boosted: res.boosted, normal: res.normal,
+           shards: res.shards, fullBoost: simulate(r.cur, o).candies };
+}
+
+/*
+  手持ちのアメで足りないぶんを、ばんのうアメ・タイプのアメで補う。
+  ばんのうアメは全員で共有なので、上のポケモンから順に割り当てて減らしていく。
+  タイプのアメは、そのポケモンの行に入れた数だけを使う。
+*/
+function planAllocItems(calcs) {
+  var left = { bs: plan.inv.bs, bm: plan.inv.bm, bl: plan.inv.bl };
+  var out = [];
+  for (var i = 0; i < plan.rows.length; i++) {
+    var r = plan.rows[i];
+    var u = { shortage: Math.max(calcs[i].candies - r.own, 0),
+              bs: 0, bm: 0, bl: 0, ts: 0, tm: 0, lack: 0 };
+    if (u.shortage > 0) {
+      var inv = { bs: left.bs, bm: left.bm, bl: left.bl, ts: r.ts, tm: r.tm };
+      var best = fillRows(u.shortage, inv, 1)[0];
+      if (best) {
+        u.bl = best.k; u.bm = best.c.bm; u.bs = best.c.bs; u.ts = best.c.ts; u.tm = best.c.tm;
+        left.bs -= u.bs; left.bm -= u.bm; left.bl -= u.bl;
+      } else {
+        /* 残っているアイテムを全部使っても足りない。使わずに、足りない数だけ出す */
+        u.lack = u.shortage - (inv.bs * 3 + inv.bm * 20 + inv.bl * 100 + inv.ts * 4 + inv.tm * 25);
+      }
+    }
+    out.push(u);
+  }
+  return out;
+}
+
+/* ポケモンごとの入力カードを作る（追加・削除・並べ替えのときだけ作り直す） */
+function planCardsHtml() {
+  if (plan.rows.length === 0) {
+    return '<div class="pr-empty">ポケモンがいません。下の「＋ ポケモンを追加」を押してください。</div>';
+  }
+  function numIn(k, v, cls, opt) {
+    return '<input class="pr-in' + (cls ? ' ' + cls : '') + '" type="number" inputmode="numeric" data-k="' + k + '"' +
+           ' value="' + (opt && v === 0 ? '' : v) + '"' + (opt ? ' placeholder="－"' : '') + ' />';
+  }
+  function sel(k, v, list) {
+    var s = '<select class="pr-sel" data-k="' + k + '">';
+    for (var j = 0; j < list.length; j++) {
+      s += '<option value="' + list[j][0] + '"' + (list[j][0] === v ? ' selected' : '') + '>' + list[j][1] + '</option>';
+    }
+    return s + '</select>';
+  }
+  var h = "";
+  for (var i = 0; i < plan.rows.length; i++) {
+    var r = plan.rows[i];
+    h += '<div class="pr-card" data-i="' + i + '">' +
+      '<div class="pr-top">' +
+        '<span class="lg-dot" style="background:' + planColor(i) + '"></span>' +
+        '<input class="pr-name" data-k="name" maxlength="20" placeholder="ポケモン' + (i + 1) + '" value="' + esc(r.name) + '" aria-label="ポケモンの名前" />' +
+        '<button class="btn pr-mini" data-act="up" aria-label="上へ">↑</button>' +
+        '<button class="btn pr-mini" data-act="down" aria-label="下へ">↓</button>' +
+        '<button class="btn pr-mini" data-act="del">削除</button>' +
+      '</div>' +
+      '<div class="pr-grid">' +
+        '<label class="pr-f">Lv.' + numIn("cur", r.cur, "lv") + '</label>→' +
+        '<label class="pr-f">Lv.' + numIn("tgt", r.tgt, "lv") + '</label>' +
+        '<label class="pr-f">あと' + numIn("rest", r.rest, "", true) + 'EXP</label>' +
+      '</div>' +
+      '<div class="pr-grid">' +
+        '<label class="pr-f">経験値タイプ' + sel("expType", r.expType,
+          [["600", "600"], ["900", "900"], ["1080", "1080"], ["1320", "1320"]]) + '</label>' +
+        '<label class="pr-f">性格補正' + sel("nature", r.nature,
+          [["down", "▼"], ["normal", "-"], ["up", "▲"]]) + '</label>' +
+        '<label class="pr-f">お昼寝島で Lv.' + numIn("island", r.island, "lv", true) + '</label>' +
+      '</div>' +
+      '<div class="pr-grid">' +
+        '<label class="pr-f">アメブで使う' + numIn("boost", r.boost, "") + '個</label>' +
+        '<button class="btn pr-mini" data-act="all">全部アメブにする</button>' +
+      '</div>' +
+      '<div class="pr-grid">' +
+        '<label class="pr-f">手持ちのアメ' + numIn("own", r.own, "") + '個</label>' +
+        '<label class="pr-f">タイプのアメ S' + numIn("ts", r.ts, "sm") + '</label>' +
+        '<label class="pr-f">M' + numIn("tm", r.tm, "sm") + '</label>' +
+      '</div>' +
+      '<div class="pr-out" id="prOut' + i + '"></div>' +
+    '</div>';
+  }
+  return h;
+}
+
+/* 万能アメ消費量（ドーナツ形の円グラフ＋ポケモンごとの内訳） */
+function planItemsHtml(items) {
+  var tot = { bs: 0, bm: 0, bl: 0 };
+  var segs = [], valSum = 0;
+  for (var i = 0; i < items.length; i++) {
+    tot.bs += items[i].bs; tot.bm += items[i].bm; tot.bl += items[i].bl;
+    /* 割合は「アメ何個ぶんか」で比べる（L1個とS1個を同じ1とは数えない） */
+    var v = items[i].bs * 3 + items[i].bm * 20 + items[i].bl * 100;
+    segs.push(v); valSum += v;
+  }
+  var count = tot.bs + tot.bm + tot.bl;
+
+  var h = '<div class="item-sum"><span class="t">合計</span>' +
+          '<span>ばんのうアメS <b>' + fmt(tot.bs) + '</b></span>' +
+          '<span>ばんのうアメM <b>' + fmt(tot.bm) + '</b></span>' +
+          '<span>ばんのうアメL <b>' + fmt(tot.bl) + '</b></span></div>';
+
+  /* 内訳に出す行（アイテムを使う・足りない のどちらかがあるポケモン） */
+  var rowsHtml = "";
+  for (var j = 0; j < items.length; j++) {
+    var u = items[j];
+    if (u.shortage <= 0) { continue; }
+    var b = [], t = [];
+    if (u.bs > 0) { b.push("S" + fmt(u.bs)); }
+    if (u.bm > 0) { b.push("M" + fmt(u.bm)); }
+    if (u.bl > 0) { b.push("L" + fmt(u.bl)); }
+    if (u.ts > 0) { t.push("S" + fmt(u.ts)); }
+    if (u.tm > 0) { t.push("M" + fmt(u.tm)); }
+    rowsHtml += '<div class="lg-row">' +
+      '<span class="lg-dot" style="background:' + planColor(j) + '"></span>' +
+      '<span class="lg-name">' + esc(planRowName(j)) + '</span>' +
+      '<span class="lg-pct">' + (valSum > 0 ? Math.round(segs[j] / valSum * 100) : 0) + '%</span>' +
+      (b.length ? '<span class="chip">万能</span>' + b.join(" / ") : '') +
+      (t.length ? '<span class="chip">タイプ</span>' + t.join(" / ") : '') +
+      (u.lack > 0 ? '<span class="lack">× 手持ちのアイテムでは あと ' + fmt(u.lack) + ' 個ぶん足りない</span>' : '') +
+      '</div>';
+  }
+
+  if (rowsHtml === "") {
+    return h + '<div class="meter-note">手持ちのアメで足りているので、ばんのうアメ・タイプのアメは使いません。</div>';
+  }
+
+  /* ドーナツ：円の線を、割合の長さずつ区切って描く。区切りには2pxのすき間をあける */
+  var R = 60, C = 2 * Math.PI * R, pos = 0;
+  var svg = '<svg class="donut" viewBox="0 0 160 160" role="img" aria-label="ばんのうアメをどのポケモンに使うかの割合">' +
+            '<circle cx="80" cy="80" r="' + R + '" fill="none" stroke="var(--base-200)" stroke-width="24" />';
+  var nSeg = 0;
+  for (var k = 0; k < segs.length; k++) { if (segs[k] > 0) { nSeg++; } }
+  for (var s = 0; s < segs.length; s++) {
+    if (segs[s] <= 0) { continue; }
+    var len = C * segs[s] / valSum;
+    var draw = (nSeg > 1) ? Math.max(len - 2, 0.5) : len;
+    svg += '<circle cx="80" cy="80" r="' + R + '" fill="none" stroke="' + planColor(s) + '" stroke-width="24"' +
+           ' stroke-dasharray="' + draw.toFixed(2) + ' ' + C.toFixed(2) + '"' +
+           ' stroke-dashoffset="' + (-pos).toFixed(2) + '" transform="rotate(-90 80 80)">' +
+           '<title>' + esc(planRowName(s)) + '：' + Math.round(segs[s] / valSum * 100) + '%</title></circle>';
+    pos += len;
+  }
+  svg += '<text x="80" y="88" text-anchor="middle" font-size="26" font-weight="800" fill="var(--text)">' + fmt(count) + '</text>' +
+         '<text x="80" y="106" text-anchor="middle" font-size="10" font-weight="700" fill="var(--muted)">ばんのうアメ（個）</text>' +
+         '</svg>';
+
+  return h + '<div class="item-wrap">' + (valSum > 0 ? svg : '') +
+         '<div class="legend">' + rowsHtml + '</div></div>' +
+         '<div class="meter-note">%は、ばんのうアメを「アメ何個ぶん」に直した量の割合です。</div>';
+}
+
+/* 計画表の表示。rebuild が true のときは入力カードも作り直す */
+function renderPlan(rebuild) {
+  if (rebuild) { $("planRows").innerHTML = planCardsHtml(); }
+
+  var calcs = [], sum = { boosted: 0, normal: 0, candies: 0, shards: 0 };
+  for (var i = 0; i < plan.rows.length; i++) {
+    var c = planRowCalc(plan.rows[i]);
+    calcs.push(c);
+    sum.boosted += c.boosted; sum.normal += c.normal;
+    sum.candies += c.candies; sum.shards += c.shards;
+  }
+  var items = planAllocItems(calcs);
+
+  /* ---- 合計の4つの箱と、使った割合のバー ---- */
+  var unused = plan.cap - sum.boosted;
+  var boostPct = plan.cap > 0 ? Math.round(sum.boosted / plan.cap * 100) : 0;
+  var h = '<div class="stat-grid">' +
+    '<div class="stat s-boost"><div class="k">アメブ合計</div><div class="v">' + fmt(sum.boosted) + '</div></div>' +
+    (unused >= 0
+      ? '<div class="stat s-unused"><div class="k">アメブ未使用</div><div class="v">' + fmt(unused) + '</div></div>'
+      : '<div class="stat s-unused"><div class="k">× アメブ上限オーバー</div><div class="v over">' + fmt(-unused) + '</div></div>') +
+    '<div class="stat s-normal"><div class="k">通常アメ合計</div><div class="v">' + fmt(sum.normal) + '</div></div>' +
+    '<div class="stat s-shard"><div class="k">かけら合計</div><div class="v">' + fmt(sum.shards) + '</div></div>' +
+    '</div>';
+
+  h += '<div class="meter-box">' +
+    '<div class="meter-top"><span>アメブ使用 ' + boostPct + '%</span><span class="lim">上限 ' + fmt(plan.cap) + '</span></div>' +
+    '<div class="meter' + (unused < 0 ? ' over' : '') + '"><span style="width:' + Math.min(boostPct, 100) + '%"></span></div>';
+  if (plan.shards > 0) {
+    var shardPct = Math.round(sum.shards / plan.shards * 100);
+    h += '<div class="meter-top"><span>かけら使用 ' + shardPct + '%</span><span class="lim">持っている ' + fmt(plan.shards) + '</span></div>' +
+         '<div class="meter' + (shardPct > 100 ? ' over' : '') + '"><span style="width:' + Math.min(shardPct, 100) + '%"></span></div>';
+    if (sum.shards > plan.shards) {
+      h += '<div class="meter-note over">× ゆめのかけらが ' + fmt(sum.shards - plan.shards) + ' 足りません</div>';
+    }
+  } else {
+    h += '<div class="meter-note">上の「持っているゆめのかけら」を入れると、かけらを使う割合も出ます。</div>';
+  }
+  if (unused < 0) {
+    h += '<div class="meter-note over">× アメブーストが上限を ' + fmt(-unused) + ' 個こえています</div>';
+  }
+  h += '</div>';
+  $("planSummary").innerHTML = h;
+
+  /* ---- 育成リストの表 ---- */
+  var t = '<tr><th style="text-align:left">ポケモン</th><th style="text-align:center">Lv</th>' +
+          '<th>アメブ</th><th>通常アメ</th><th>アメ合計</th><th>かけら</th></tr>';
+  for (var j = 0; j < plan.rows.length; j++) {
+    var r = plan.rows[j], cj = calcs[j];
+    var badge = (r.nature === "down") ? '<span class="nat-badge down">▼▼</span>'
+              : (r.nature === "up")   ? '<span class="nat-badge up">▲▲</span>' : '';
+    t += '<tr><td class="pn">' + esc(planRowName(j)) + badge + '</td>' +
+         '<td class="lv">' + r.cur + ' → ' + r.tgt +
+         (r.island > 0 ? '<span class="zzz">zzZ</span>' + r.island : '') + '</td>' +
+         '<td>' + fmt(cj.boosted) + '</td><td>' + fmt(cj.normal) + '</td>' +
+         '<td>' + fmt(cj.candies) + '</td><td>' + fmt(cj.shards) + '</td></tr>';
+  }
+  t += '<tr class="sum"><td class="pn">合計</td><td></td>' +
+       '<td>' + fmt(sum.boosted) + '</td><td>' + fmt(sum.normal) + '</td>' +
+       '<td>' + fmt(sum.candies) + '</td><td>' + fmt(sum.shards) + '</td></tr>';
+  $("planTable").innerHTML = t;
+
+  /* ---- 入力カードの下の、1匹ぶんの答え ---- */
+  for (var k = 0; k < plan.rows.length; k++) {
+    var el = $("prOut" + k);
+    if (!el) { continue; }
+    var rk = plan.rows[k], ck = calcs[k], uk = items[k];
+    if (rk.tgt < rk.cur) {
+      el.innerHTML = '<span class="warn">目標のレベルを、今のレベル以上にしてください。</span>';
+      continue;
+    }
+    if (rk.tgt === rk.cur) {
+      /* お昼寝島だけで上げるポケモンなど、アメを使わない行 */
+      el.innerHTML = 'アメは使いません' +
+        (rk.island > rk.cur ? '（お昼寝島で Lv.' + rk.island + ' まで上げる予定）' : '');
+      continue;
+    }
+    var o = 'アメブ <b>' + fmt(ck.boosted) + '</b> ＋ 通常 <b>' + fmt(ck.normal) + '</b> ＝ <b>' + fmt(ck.candies) + '</b> 個' +
+            '／かけら <span class="diamond">◆</span> ' + fmt(ck.shards);
+    if (rk.boost > ck.boosted) {
+      o += '<br /><span class="warn">アメブは ' + fmt(ck.boosted) + ' 個で目標に届きます（入れた数より少なくて済みます）</span>';
+    }
+    if (uk.shortage > 0) {
+      o += '<br />手持ちのアメより <b>' + fmt(uk.shortage) + '</b> 個多く必要' +
+           (uk.lack > 0 ? '<span class="lack">（アイテムでも あと ' + fmt(uk.lack) + ' 個ぶん足りない）</span>'
+                        : '（下の「万能アメ消費量」で補います）');
+    }
+    el.innerHTML = o;
+  }
+
+  /* ---- 万能アメ消費量 ---- */
+  $("planItems").innerHTML = planItemsHtml(items);
+}
+
+/* タブを切りかえる */
+function showTab(name) {
+  if (TAB_NAMES.indexOf(name) < 0) { name = "calc"; }
+  state.tab = name;
+  for (var i = 0; i < TAB_NAMES.length; i++) {
+    $("tab-" + TAB_NAMES[i]).hidden = (TAB_NAMES[i] !== name);
+  }
+  var btns = $("tabBar").querySelectorAll(".tab");
+  for (var j = 0; j < btns.length; j++) {
+    var on = (btns[j].getAttribute("data-tab") === name);
+    btns[j].classList.toggle("on", on);
+    btns[j].setAttribute("aria-selected", on ? "true" : "false");
+  }
+  $("resetRow").hidden = (name === "plan");   /* 計画表のタブには専用の「消す」ボタンがある */
+}
+
+function renderAll() { renderMain(); renderTsurukame(); renderNap(); renderReverse(); renderPlan(false); }
 
 /* =========================================================================
    6. ボタンやスライダーの動作
@@ -1461,6 +2265,169 @@ $("napClear").onclick = function () { state.napBox = []; renderNap(); };
 /* この欄だけのアメブースト */
 $("napBoost").onchange = function () { state.napBoost = this.checked; renderNap(); };
 
+/* ---- タブ ---- */
+$("tabBar").addEventListener("click", function (e) {
+  var btn = e.target.closest(".tab");
+  if (!btn) { return; }
+  showTab(btn.getAttribute("data-tab"));
+  window.scrollTo(0, 0);
+});
+
+/* ---- アメ逆算 ---- */
+function rvSetCur(v) {
+  state.rvCur = Math.min(Math.max(v, MIN_LEVEL), MAX_LEVEL);
+  renderReverse();
+}
+$("rvCurMinus").onclick = function () { rvSetCur(state.rvCur - 1); };
+$("rvCurPlus").onclick  = function () { rvSetCur(state.rvCur + 1); };
+$("rvCurRange").oninput = function () { rvSetCur(parseInt(this.value, 10)); };
+
+/* 「あと ◯◯」の欄（レベル計算タブの欄と同じ動き） */
+$("rvExp").oninput = function () {
+  var digits = this.value.replace(/[^0-9]/g, "");
+  var need = rvNextExp();
+  var n = parseInt(digits, 10);
+  if (isNaN(n)) { n = need; }
+  if (n > need) { n = need; }
+  state.rvCarry = need - Math.max(n, 1);
+  if (digits !== this.value || n !== parseInt(digits, 10)) { this.value = String(n); }
+  renderReverse();
+};
+$("rvExp").onblur  = function () { this.value = String(rvNextExp() - state.rvCarry); };
+$("rvExp").onfocus = function () { this.select(); };
+
+setupGroup("rvExpGroup", function (v) { state.rvExpType = v; });
+setupGroup("rvNatGroup", function (v) { state.rvNature = v; });
+setupGroup("rvBoostGroup", function (v) {
+  state.rvMult = parseInt(v, 10);
+  /* アメブーストを選んだのに数が0なら、ひとまず「全部アメブースト」にしておく */
+  if (state.rvMult > 0 && state.rvBoostN === 0) {
+    state.rvBoostN = state.rvCandy;
+    $("rvBoostN").value = String(state.rvBoostN);
+  }
+});
+$("rvCandy").oninput = function () {
+  state.rvCandy = toInt(this.value, 0, 99999, 0);
+  renderReverse();
+};
+$("rvBoostN").oninput = function () {
+  state.rvBoostN = toInt(this.value, 0, 99999, 0);
+  renderReverse();
+};
+
+/* ---- アメブ計画表：設定 ---- */
+$("planTitle").oninput = function () { plan.title = this.value.slice(0, 30); };
+$("planYear").oninput  = function () { plan.year = toInt(this.value, 2020, 2100, plan.year); };
+$("planMon").oninput   = function () { plan.mon  = toInt(this.value, 1, 12, plan.mon); };
+$("planYear").onchange = function () { this.value = String(plan.year); };
+$("planMon").onchange  = function () { this.value = String(plan.mon); };
+
+setupGroup("planBoostGroup", function (v) {
+  plan.mult = parseInt(v, 10);
+  /* 種類を変えたら、ホリデーの上限（通常3,500／ミニ350）に戻す */
+  plan.cap = PLAN_CAP[plan.mult];
+  $("planCap").value = String(plan.cap);
+});
+$("planCap").oninput    = function () { plan.cap = toInt(this.value, 0, 99999, 0); renderPlan(false); };
+$("planShards").oninput = function () { plan.shards = toInt(this.value, 0, 999999999, 0); renderPlan(false); };
+function setupPlanInv(inputId, key) {
+  $(inputId).oninput = function () { plan.inv[key] = toInt(this.value, 0, 9999, 0); renderPlan(false); };
+}
+setupPlanInv("planBS", "bs");
+setupPlanInv("planBM", "bm");
+setupPlanInv("planBL", "bl");
+setupHelp("planCapHelpBtn", "planCapHelp");
+
+/* ---- アメブ計画表：ポケモンごとの入力カード ---- */
+/* 数字の欄の範囲。opt が true の欄は、空っぽ（＝0）でもよい */
+var PLAN_FIELD = {
+  cur:    { min: MIN_LEVEL, max: MAX_LEVEL },
+  tgt:    { min: MIN_LEVEL, max: MAX_LEVEL },
+  rest:   { min: 0, max: 9999999, opt: true },
+  island: { min: 0, max: MAX_LEVEL, opt: true },
+  boost:  { min: 0, max: 99999 },
+  own:    { min: 0, max: 99999 },
+  ts:     { min: 0, max: 9999 },
+  tm:     { min: 0, max: 9999 }
+};
+
+function planRowOf(el) {
+  var card = el.closest(".pr-card");
+  if (!card) { return -1; }
+  return parseInt(card.getAttribute("data-i"), 10);
+}
+
+/* 入力中（打っている途中）は欄の文字を書きかえず、中の値だけ直す */
+function onPlanRowInput(e) {
+  var el = e.target, k = el.getAttribute("data-k");
+  var i = planRowOf(el), r = plan.rows[i];
+  if (!k || !r) { return; }
+  if (k === "name") {
+    r.name = el.value.slice(0, 20);
+  } else if (k === "expType" || k === "nature") {
+    r[k] = el.value;
+  } else if (PLAN_FIELD[k]) {
+    var f = PLAN_FIELD[k];
+    /* レベルの欄は、消して打ち直している途中なら前の値のまま */
+    r[k] = toInt(el.value, f.min, f.max, (k === "cur" || k === "tgt") ? r[k] : 0);
+  }
+  renderPlan(false);
+}
+$("planRows").addEventListener("input", onPlanRowInput);
+$("planRows").addEventListener("change", function (e) {
+  onPlanRowInput(e);
+  /* 入力が終わったら、範囲の外の数などを直した値を欄に出す */
+  var el = e.target, k = el.getAttribute("data-k"), r = plan.rows[planRowOf(el)];
+  if (r && PLAN_FIELD[k]) {
+    el.value = (PLAN_FIELD[k].opt && r[k] === 0) ? "" : String(r[k]);
+  }
+});
+
+$("planRows").addEventListener("click", function (e) {
+  var btn = e.target.closest("[data-act]");
+  if (!btn) { return; }
+  var i = planRowOf(btn), act = btn.getAttribute("data-act");
+  var rows = plan.rows, tmp;
+  if (!rows[i]) { return; }
+
+  if (act === "all") {
+    /* 目標のレベルまで全部アメブーストで使ったときの数を入れる */
+    rows[i].boost = planRowCalc(rows[i]).fullBoost;
+    var inp = btn.closest(".pr-card").querySelector('[data-k="boost"]');
+    if (inp) { inp.value = String(rows[i].boost); }
+    renderPlan(false);
+    return;
+  }
+  if (act === "up" && i > 0) {
+    tmp = rows[i - 1]; rows[i - 1] = rows[i]; rows[i] = tmp;
+  } else if (act === "down" && i < rows.length - 1) {
+    tmp = rows[i + 1]; rows[i + 1] = rows[i]; rows[i] = tmp;
+  } else if (act === "del") {
+    if (!window.confirm("「" + planRowName(i) + "」を計画から消します。よろしいですか？")) { return; }
+    rows.splice(i, 1);
+  } else {
+    return;
+  }
+  renderPlan(true);
+});
+
+$("planAdd").onclick = function () {
+  if (plan.rows.length >= PLAN_MAX_ROWS) { return; }
+  plan.rows.push(newPlanRow());
+  renderPlan(true);
+  /* 追加したカードの名前の欄にすぐ打ち込めるようにする */
+  var names = $("planRows").querySelectorAll(".pr-name");
+  if (names.length) { names[names.length - 1].focus(); }
+};
+
+$("planClear").onclick = function () {
+  if (!window.confirm("アメブ計画表をぜんぶ消して、最初の状態に戻します。よろしいですか？")) { return; }
+  plan = defaultPlan();
+  applyPlanToScreen();
+  renderPlan(true);
+  savePlan();
+};
+
 /* 入力をぜんぶ最初に戻す */
 $("resetBtn").onclick = function () {
   if (!window.confirm("入力した内容をぜんぶ消して、最初の状態に戻します。よろしいですか？")) { return; }
@@ -1471,7 +2438,11 @@ $("resetBtn").onclick = function () {
 
 /* 最初の表示（前回の内容があれば読み込んでから出す） */
 loadState();
+loadPlan();
 applyStateToScreen();
+applyPlanToScreen();
+showTab(state.tab);
+renderPlan(true);      /* 計画表の入力カードを先に作っておく */
 renderAll();
 
 /* 何か操作するたびに自動で保存する。
