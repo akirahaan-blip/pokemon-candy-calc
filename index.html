@@ -424,6 +424,21 @@ table.plan tr.sum td { border-top: 2px solid var(--primary); border-bottom: none
 .chip { font-size: 0.72rem; font-weight: 700; background: var(--base-200); border-radius: 6px; padding: 1px 6px; }
 .lack { font-size: 0.8rem; font-weight: 700; color: #dc2626; }
 
+/* 計画表のバックアップ */
+.bk-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.bk-btn { font-size: 0.9rem; padding: 8px 14px; min-height: 40px; }
+.bk-text {
+  display: block; width: 100%; height: 90px; margin-top: 10px; padding: 8px;
+  font-family: monospace; font-weight: 700; font-size: 0.75rem; color: var(--text);
+  border: 1px solid var(--base-300); border-radius: 8px; background: #fff; resize: vertical; word-break: break-all;
+}
+.bk-main { background: var(--primary); border-color: var(--primary); color: #fff; }
+.bk-main:hover { background: var(--primary-dark); }
+#bkImportBox .bk-btn { margin-top: 8px; }
+.bk-msg { font-size: 0.85rem; margin-top: 6px; line-height: 1.6; }
+.bk-msg.ok { color: #15803d; }
+.bk-msg.ng { color: #dc2626; }
+
 footer { color: var(--muted); font-size: 0.8rem; padding: 0 16px 40px; max-width: 720px; margin: 32px auto 0; line-height: 1.8;font-weight:700 }
 footer ul { padding-left: 1.2em; margin: 0; }
 </style>
@@ -841,6 +856,28 @@ footer ul { padding-left: 1.2em; margin: 0; }
 
     <h3 class="plan-h">万能アメ消費量</h3>
     <div id="planItems"></div>
+
+    <h3 class="plan-h">スマホに送る・バックアップ</h3>
+    <p class="plan-lead">
+      <b>パソコンで入れた計画をスマホで見るとき：</b>「スマホで開くリンクをコピー」を押して、
+      LINEの自分用メモなどに貼って送り、スマホでそのリンクをタップしてください。<br />
+      リンクや文字を残しておけば、スマホを買いかえたときのバックアップにもなります。
+    </p>
+    <div class="bk-btns">
+      <button class="btn bk-btn bk-main" id="planLink">スマホで開くリンクをコピー</button>
+      <button class="btn bk-btn" id="planExport">文字で書き出す</button>
+      <button class="btn bk-btn" id="planImportOpen">文字を読み込む</button>
+    </div>
+    <div class="bk-msg" id="bkLinkMsg"></div>
+    <div id="bkExportBox" hidden>
+      <textarea class="bk-text" id="bkExportText" readonly aria-label="書き出した計画表の文字"></textarea>
+      <div class="bk-msg" id="bkExportMsg"></div>
+    </div>
+    <div id="bkImportBox" hidden>
+      <textarea class="bk-text" id="bkImportText" placeholder="ここに、書き出した文字を貼り付けてください" aria-label="読み込む計画表の文字"></textarea>
+      <button class="btn bk-btn" id="planImport">この内容で読み込む</button>
+      <div class="bk-msg" id="bkImportMsg"></div>
+    </div>
 
     <div class="reset-row" style="padding:0;">
       <button class="reset-btn" id="planClear">計画表をぜんぶ消す</button>
@@ -1778,14 +1815,24 @@ function savePlan() {
   try { localStorage.setItem(PLAN_KEY, JSON.stringify(plan)); } catch (e) {}
 }
 
-/* 保存してあった計画を読み込む。おかしな値は初期値に置きかえる */
+/* 保存してあった計画を読み込む */
 function loadPlan() {
   var raw = null;
   try { raw = localStorage.getItem(PLAN_KEY); } catch (e) { return; }
   if (!raw) { return; }
   var d;
   try { d = JSON.parse(raw); } catch (e) { return; }
-  if (!d || typeof d !== "object") { return; }
+  var p = cleanPlan(d);
+  if (p) { plan = p; }
+}
+
+/* 計画のデータを確かめて、使える形に直して返す。おかしな値は初期値に置きかえる。
+   保存データ・リンク・貼り付けた文字のどれから読むときも、ここを通す。
+   計画のデータでなければ null を返す。 */
+function cleanPlan(d) {
+  if (d && typeof d === "object" && d.kind === PLAN_KIND) { d = d.plan; }   /* 書き出した形 */
+  if (!d || typeof d !== "object") { return null; }
+  if (Object.prototype.toString.call(d.rows) !== "[object Array]") { return null; }
 
   var p = defaultPlan();
   if (typeof d.title === "string") { p.title = d.title.slice(0, 30); }
@@ -1818,7 +1865,109 @@ function loadPlan() {
       p.rows.push(r);
     }
   }
+  return p;
+}
+
+/* =========================================================================
+   5-5. 計画表をスマホに送る・バックアップ
+   パソコンで入れた計画を、リンク（または文字）にしてスマホへ持っていく。
+   計画の中身はリンクの「#」より後ろに入れるので、サーバーには送られない。
+   ========================================================================= */
+
+var PLAN_KIND = "amebu-plan";     /* 書き出した文字の目印 */
+var PUBLIC_URL = "https://akirahaan-blip.github.io/pokemon-candy-calc/";
+
+/* 計画を、書き出し用の文字（JSON）にする */
+function planToText() {
+  return JSON.stringify({ kind: PLAN_KIND, v: 1, plan: plan });
+}
+
+/* 日本語を含む文字を、リンクに入れられる英数字に変換する（base64url）。readPlanHash が逆の変換 */
+function textToHash(s) {
+  return btoa(unescape(encodeURIComponent(s)))
+    .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+function hashToText(h) {
+  var b = h.replace(/-/g, "+").replace(/_/g, "/");
+  while (b.length % 4) { b += "="; }
+  return decodeURIComponent(escape(atob(b)));
+}
+
+/* 貼り付けた文字から計画を取り出す。LINEで前後に余計な文字が付いても読めるように、
+   リンクなら「#plan=」の後ろ、文字なら最初の { から最後の } までを使う */
+function planFromPasted(text) {
+  try {
+    var m = /#plan=([A-Za-z0-9_-]+)/.exec(text);
+    if (m) { return cleanPlan(JSON.parse(hashToText(m[1]))); }
+    var a = text.indexOf("{"), b = text.lastIndexOf("}");
+    if (a < 0 || b < a) { return null; }
+    return cleanPlan(JSON.parse(text.slice(a, b + 1)));
+  } catch (e) { return null; }
+}
+
+/* リンクの行き先。公開中のサイトで開いているならそのページ、
+   パソコンのファイルを直接開いているとき（file://）などは、公開中のサイトにする */
+function planLinkBase() {
+  var host = location.hostname;
+  if (/^https?:$/.test(location.protocol) && host !== "localhost" && host !== "127.0.0.1") {
+    return location.origin + location.pathname;
+  }
+  return PUBLIC_URL;
+}
+
+/* 文字をコピーする。できなかったら false を返す（そのときは画面の文字を手でコピーしてもらう） */
+function copyText(text, fallbackArea, done) {
+  function legacy() {
+    var ok = false;
+    if (fallbackArea) {
+      fallbackArea.value = text;
+      fallbackArea.focus();
+      fallbackArea.select();
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+    }
+    done(ok);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function () { done(true); }, legacy);
+  } else {
+    legacy();
+  }
+}
+
+function setMsg(id, ok, text) {
+  var el = $(id);
+  el.className = "bk-msg " + (ok ? "ok" : "ng");
+  el.textContent = (ok ? "✓ " : "× ") + text;
+}
+
+/* 読み込んだ計画に置きかえる（確認してから） */
+function replacePlan(p, how) {
+  if (!window.confirm(how + "計画表（ポケモン " + p.rows.length + " 匹）を読み込みます。\n" +
+                      "いまこの端末にある計画表は、読み込んだ内容に置きかわります。よろしいですか？")) {
+    return false;
+  }
   plan = p;
+  applyPlanToScreen();
+  renderPlan(true);
+  savePlan();
+  return true;
+}
+
+/* リンクから開かれたとき（アドレスの最後に #plan=… が付いているとき）に読み込む */
+function readPlanHash() {
+  var m = /^#plan=([A-Za-z0-9_-]+)$/.exec(location.hash);
+  if (!m) { return; }
+  var p = null;
+  try { p = cleanPlan(JSON.parse(hashToText(m[1]))); } catch (e) { p = null; }
+  /* 読み込んでも読み込まなくても、アドレスから #plan=… を消しておく
+     （ページを再読み込みしたときに、また聞かれないように） */
+  try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+  showTab("plan");
+  if (!p) {
+    window.alert("リンクから計画表を読み込めませんでした。リンクが途中で切れていないか確かめてください。");
+    return;
+  }
+  replacePlan(p, "リンクの");
 }
 
 /* 設定の欄に、いまの計画の値を入れる */
@@ -2420,6 +2569,58 @@ $("planAdd").onclick = function () {
   if (names.length) { names[names.length - 1].focus(); }
 };
 
+/* ---- スマホに送る・バックアップ ---- */
+$("planLink").onclick = function () {
+  var url = planLinkBase() + "#plan=" + textToHash(planToText());
+  $("bkImportBox").hidden = true;
+  $("bkExportBox").hidden = true;
+  copyText(url, $("bkExportText"), function (ok) {
+    if (ok) {
+      setMsg("bkLinkMsg", true, "リンクをコピーしました。LINEの自分用メモなどに貼って送り、スマホでタップしてください。");
+    } else {
+      /* 自動でコピーできなかったときは、リンクを見せて手でコピーしてもらう */
+      $("bkExportText").value = url;
+      $("bkExportBox").hidden = false;
+      setMsg("bkLinkMsg", false, "自動でコピーできませんでした。下の枠の中を全部選んでコピーしてください。");
+      $("bkExportMsg").textContent = "";
+    }
+  });
+};
+
+$("planExport").onclick = function () {
+  var text = planToText();
+  $("bkImportBox").hidden = true;
+  $("bkExportBox").hidden = false;
+  $("bkExportText").value = text;
+  $("bkLinkMsg").textContent = "";
+  copyText(text, $("bkExportText"), function (ok) {
+    if (ok) { setMsg("bkExportMsg", true, "コピーしました。LINEの自分用メモなどに貼って残してください。"); }
+    else    { setMsg("bkExportMsg", false, "自動でコピーできませんでした。上の枠の中を全部選んでコピーしてください。"); }
+  });
+};
+
+$("planImportOpen").onclick = function () {
+  $("bkExportBox").hidden = true;
+  $("bkImportBox").hidden = false;
+  $("bkLinkMsg").textContent = "";
+  $("bkImportMsg").textContent = "";
+  $("bkImportText").focus();
+};
+
+$("planImport").onclick = function () {
+  var text = $("bkImportText").value;
+  if (!text.trim()) { setMsg("bkImportMsg", false, "上の枠に、書き出した文字かリンクを貼り付けてください。"); return; }
+  var p = planFromPasted(text);
+  if (!p) {
+    setMsg("bkImportMsg", false, "計画表の文字として読めませんでした。途中で切れていないか確かめてください。");
+    return;
+  }
+  if (replacePlan(p, "貼り付けた")) {
+    $("bkImportText").value = "";
+    setMsg("bkImportMsg", true, "読み込みました（ポケモン " + p.rows.length + " 匹）。");
+  }
+};
+
 $("planClear").onclick = function () {
   if (!window.confirm("アメブ計画表をぜんぶ消して、最初の状態に戻します。よろしいですか？")) { return; }
   plan = defaultPlan();
@@ -2444,6 +2645,7 @@ applyPlanToScreen();
 showTab(state.tab);
 renderPlan(true);      /* 計画表の入力カードを先に作っておく */
 renderAll();
+readPlanHash();        /* 「スマホで開くリンク」から開かれたときは、その計画を読み込む */
 
 /* 何か操作するたびに自動で保存する。
    入力欄・チェック・ボタンのどれを触っても、ここで受け止められる。 */

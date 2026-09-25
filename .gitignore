@@ -11,3 +11,6 @@ ehthumbs.db
 *.swp
 *~
 .vscode/
+
+# Claude の確認用サーバー設定（自分のパソコンだけで使う）
+.claude/
