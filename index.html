@@ -320,6 +320,36 @@ table.cmp .short { color: var(--accent); font-size: 0.8rem; font-weight: 700; ma
   cursor: pointer; touch-action: manipulation;
 }
 .tab.on { background: var(--primary); border-color: var(--primary); color: #fff; }
+/* スマホではタブが5つ並ぶと窮屈なので、文字を小さく（小さい文字は Bold(700) に落とす） */
+@media (max-width: 480px) {
+  .tabs { gap: 3px; padding: 8px 8px 0; }
+  .tab { font-size: 0.78rem; font-weight: 700; padding: 10px 0; }
+}
+
+/* ===== 睡眠EXP ===== */
+.sx-head { text-align: center; }
+.sx-head .sx-big { font-size: 1.9rem; margin: 2px 0; }
+.sx-head .sx-big .num { color: var(--accent); }
+.sx-sub { font-size: 0.8rem; font-weight: 700; color: var(--muted); line-height: 1.7; }
+.sx-box { border: 1px solid var(--base-300); border-radius: 10px; padding: 12px 14px; margin-top: 10px; text-align: center; }
+.sx-box .t { font-size: 0.88rem; }
+.sx-box .b { font-size: 1.35rem; margin: 4px 0; }
+.sx-box .b .num { color: var(--secondary); }
+.nw { white-space: nowrap; }   /* ここでは改行しない */
+.sx-box.sx-exact { background: #f0fdf4; border-color: #bbf7d0; }   /* ぴったり＝成功の緑 */
+/* 睡眠EXP早見 */
+.qk-score { display: flex; align-items: center; gap: 4px; }
+.qk-step { min-width: 38px; padding: 6px 4px; font-size: 0.85rem; }
+.qk-big { text-align: center; font-size: 1.9rem; margin: 6px 0 2px; }
+.qk-big .num { color: var(--accent); }
+table.cmp.qk-table th, table.cmp.qk-table td { text-align: center; padding: 6px 4px; }
+table.cmp.qk-table td.cell { cursor: pointer; }
+table.cmp.qk-table td.cell:hover { background: var(--base-200); }
+table.cmp.qk-table td.cell.on { background: var(--primary); color: #fff; }
+table.cmp.sx-formula td { vertical-align: middle; }
+table.cmp.sx-formula td.name { line-height: 1.4; white-space: normal; }
+table.cmp.sx-formula .sx-rate { color: var(--primary-dark); }
+table.cmp.sx-formula .sx-sub { font-size: 0.72rem; }
 .tab-panel[hidden] { display: none; }
 
 /* お昼寝島タブの「いまの条件」 */
@@ -451,6 +481,7 @@ footer ul { padding-left: 1.2em; margin: 0; }
 <nav class="tabs" id="tabBar" role="tablist">
   <button class="tab on" data-tab="calc" role="tab">レベル計算</button>
   <button class="tab" data-tab="rev" role="tab">アメ逆算</button>
+  <button class="tab" data-tab="sleep" role="tab">睡眠EXP</button>
   <button class="tab" data-tab="nap" role="tab">お昼寝島</button>
   <button class="tab" data-tab="plan" role="tab">アメブ計画</button>
 </nav>
@@ -717,6 +748,212 @@ footer ul { padding-left: 1.2em; margin: 0; }
     <div id="rvAnswer"></div>
   </section>
   </div><!-- /タブ2 -->
+
+  <!-- ===== タブ：睡眠EXP（あと何回寝たら目標に届くか） ===== -->
+  <div class="tab-panel" id="tab-sleep" hidden>
+  <section class="card" style="margin-top:8px">
+    <h2>睡眠EXP：あと何回寝たら届く？</h2>
+    <p class="lead">
+      睡眠リサーチでポケモンがもらう経験値（睡眠EXP）から、目標までに何回・何点寝ればいいかを計算します。<br />
+      ※このタブの入力は、ほかのタブとは別々です。
+    </p>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">残りの入れ方</div>
+      <div class="join" id="sxModeGroup">
+        <button class="seg on" data-val="lv">レベルで</button>
+        <button class="seg" data-val="exp">残りEXPで</button>
+      </div>
+    </div>
+
+    <div id="sxLvBox">
+      <div class="row" style="max-width:100%;">
+        <div class="row-label">今のレベル</div>
+        <div>Lv.<input type="number" class="num-input" id="sxCur" value="30" min="1" max="70" inputmode="numeric" style="width:70px" /></div>
+      </div>
+      <div class="row" style="max-width:100%;">
+        <div class="row-label">つぎのレベルまで</div>
+        <div class="exp-row" style="margin-top:0">
+          <span class="exp-row-label">あと</span>
+          <input type="text" id="sxExp" class="exp-input" value="0"
+                 inputmode="numeric" pattern="[0-9]*" maxlength="6"
+                 autocomplete="off" enterkeyhint="done"
+                 title="ゲームに出ている「つぎのレベルまで あと ◯◯」の数字を入れてください"
+                 aria-label="つぎのレベルまでの残り経験値" />
+          <span class="exp-row-max">/ <span id="sxExpMax">0</span></span>
+        </div>
+      </div>
+      <div class="row" style="max-width:100%;">
+        <div class="row-label">目標のレベル</div>
+        <div>Lv.<input type="number" class="num-input" id="sxTgt" value="31" min="1" max="70" inputmode="numeric" style="width:70px" /></div>
+      </div>
+      <div class="row" style="max-width:100%;">
+        <div class="row-label">経験値タイプ</div>
+        <div class="join" id="sxExpGroup">
+          <button class="seg on" data-val="600">600</button>
+          <button class="seg" data-val="900">900</button>
+          <button class="seg" data-val="1080">1080</button>
+          <button class="seg" data-val="1320">1320</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="sxExpBox" hidden>
+      <div class="row" style="max-width:100%;">
+        <div class="row-label">目標までの残りEXP</div>
+        <div><input type="number" class="num-input" id="sxRemain" value="290" min="0" max="9999999" inputmode="numeric" /> EXP</div>
+      </div>
+    </div>
+
+    <hr class="divider" style="margin:16px 0;" />
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">性格による経験値補正</div>
+      <div class="join" id="sxNatGroup">
+        <button class="seg" data-val="down">▼</button>
+        <button class="seg on" data-val="normal">-</button>
+        <button class="seg" data-val="up">▲</button>
+      </div>
+    </div>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">
+        睡眠EXPボーナス持ち
+        <button class="help-btn" id="sxBonusHelpBtn" aria-label="睡眠EXPボーナスの説明">?</button>
+      </div>
+      <div class="join" id="sxBonusGroup">
+        <button class="seg on" data-val="0">0</button>
+        <button class="seg" data-val="1">1</button>
+        <button class="seg" data-val="2">2</button>
+        <button class="seg" data-val="3">3</button>
+        <button class="seg" data-val="4">4</button>
+        <button class="seg" data-val="5">5匹</button>
+      </div>
+    </div>
+    <div class="note" id="sxBonusHelp" style="max-width:100%;">
+      サブスキル「<b>睡眠EXPボーナス</b>」を持っているポケモンが、チーム（5匹）に何匹いるかを選びます。<br />
+      1匹につき、チーム全員の睡眠EXPが <b>＋14%</b> になります（育てたいポケモン自身が持っていれば、それも1匹と数えます）。
+    </div>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">せいちょうのおこう（2倍）</div>
+      <label class="switch">
+        <input type="checkbox" id="sxIncense" />
+        <span class="slider-bg"></span>
+      </label>
+    </div>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">
+        イベントの倍率
+        <button class="help-btn" id="sxEventHelpBtn" aria-label="イベントの倍率の説明">?</button>
+      </div>
+      <div class="join" id="sxEventGroup">
+        <button class="seg on" data-val="1">なし</button>
+        <button class="seg" data-val="1.5">1.5倍</button>
+        <button class="seg" data-val="2">2倍</button>
+        <button class="seg" data-val="3">3倍</button>
+      </div>
+    </div>
+    <div class="note" id="sxEventHelp" style="max-width:100%;">
+      イベント中は、睡眠EXPが何倍かになることがあります。<br />
+      <b>グッドスリープデー：</b>満月の前後 <b>2倍</b>・満月 <b>3倍</b><br />
+      <b>すくすくウィークなど：</b><b>1.5倍</b>のことが多い<br />
+      <span style="color:#b59a94">※倍率はイベントごとにちがうので、ゲーム内のお知らせで確かめてください。</span>
+    </div>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">いつもの睡眠スコア（1回）</div>
+      <div><input type="number" class="num-input" id="sxScore" value="100" min="1" max="100" inputmode="numeric" style="width:80px" /> 点</div>
+    </div>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">
+        1回の最低スコア
+        <button class="help-btn" id="sxMinHelpBtn" aria-label="1回の最低スコアの説明">?</button>
+      </div>
+      <div><input type="number" class="num-input" id="sxMinScore" value="18" min="1" max="100" inputmode="numeric" style="width:80px" /> 点</div>
+    </div>
+    <div class="note" id="sxMinHelp" style="max-width:100%;">
+      睡眠は <b>90分（1時間30分）以上</b>寝ないと記録されません。<br />
+      8時間半で100点なので、90分はおよそ <b>18点</b>です。「あまりなしで上げきる」組み合わせは、この点数より低い回を使わずに作ります。<br />
+      <span style="color:#b59a94">※目安です。ゲームで実際に取れた低い点数が分かったら、その数に直してください。</span>
+    </div>
+
+    <div id="sxAnswer"></div>
+  </section>
+
+  <!-- 睡眠EXP早見：条件をぽちぽち変えて、もらえるEXPをその場で見る（上の計算とは入力が別） -->
+  <section class="card">
+    <h2>睡眠EXP早見（ぽちぽち計算）</h2>
+    <p class="lead">
+      スコアやボーナスをぽちぽち変えて、もらえる睡眠EXPをその場で確かめられます。<br />
+      ※上の「あと何回寝たら届く？」とは入力が別々です。
+    </p>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">睡眠スコア</div>
+      <div class="qk-score">
+        <button class="btn qk-step" data-step="-5">−5</button>
+        <button class="btn qk-step" data-step="-1">−1</button>
+        <input type="number" class="num-input" id="qkScore" value="100" min="1" max="100" inputmode="numeric" style="width:64px" />
+        <button class="btn qk-step" data-step="1">＋1</button>
+        <button class="btn qk-step" data-step="5">＋5</button>
+      </div>
+    </div>
+    <div class="row" style="max-width:100%; margin-top:-6px;">
+      <div class="row-label"></div>
+      <div class="join" id="qkScoreGroup">
+        <button class="seg on" data-val="100">100</button>
+        <button class="seg" data-val="90">90</button>
+        <button class="seg" data-val="80">80</button>
+        <button class="seg" data-val="70">70</button>
+        <button class="seg" data-val="50">50</button>
+      </div>
+    </div>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">性格による経験値補正</div>
+      <div class="join" id="qkNatGroup">
+        <button class="seg" data-val="down">▼</button>
+        <button class="seg on" data-val="normal">-</button>
+        <button class="seg" data-val="up">▲</button>
+      </div>
+    </div>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">睡眠EXPボーナス持ち</div>
+      <div class="join" id="qkBonusGroup">
+        <button class="seg on" data-val="0">0</button>
+        <button class="seg" data-val="1">1</button>
+        <button class="seg" data-val="2">2</button>
+        <button class="seg" data-val="3">3</button>
+        <button class="seg" data-val="4">4</button>
+        <button class="seg" data-val="5">5匹</button>
+      </div>
+    </div>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">せいちょうのおこう（2倍）</div>
+      <label class="switch">
+        <input type="checkbox" id="qkIncense" />
+        <span class="slider-bg"></span>
+      </label>
+    </div>
+
+    <div class="row" style="max-width:100%;">
+      <div class="row-label">イベントの倍率</div>
+      <div class="join" id="qkEventGroup">
+        <button class="seg on" data-val="1">なし</button>
+        <button class="seg" data-val="1.5">1.5倍</button>
+        <button class="seg" data-val="2">2倍</button>
+        <button class="seg" data-val="3">3倍</button>
+      </div>
+    </div>
+
+    <div id="qkAnswer"></div>
+  </section>
+  </div><!-- /タブ：睡眠EXP -->
 
   <!-- ===== タブ3：お昼寝島 ===== -->
   <div class="tab-panel" id="tab-nap" hidden>
@@ -1082,10 +1319,28 @@ var state = {
   rvNature: "normal", /* アメ逆算：性格補正 */
   rvCandy: 500,       /* アメ逆算：使うアメの数 */
   rvMult: 0,          /* アメ逆算：アメブースト（0=使わない／4=ミニ／5=通常） */
-  rvBoostN: 0         /* アメ逆算：そのうちアメブーストで使う数 */
+  rvBoostN: 0,        /* アメ逆算：そのうちアメブーストで使う数 */
+  sxMode: "lv",       /* 睡眠EXP：残りの入れ方（lv=レベルで／exp=残りEXPで） */
+  sxCur: 30,          /* 睡眠EXP：今のレベル */
+  sxCarry: 0,         /* 睡眠EXP：今のレベルで、すでにたまっている経験値 */
+  sxTgt: 31,          /* 睡眠EXP：目標のレベル */
+  sxExpType: "600",   /* 睡眠EXP：経験値タイプ */
+  sxRemain: 290,      /* 睡眠EXP：残りEXP（「残りEXPで」のとき） */
+  sxNature: "normal", /* 睡眠EXP：性格補正 */
+  sxBonus: 0,         /* 睡眠EXP：睡眠EXPボーナス持ちの数（0〜5） */
+  sxIncense: false,   /* 睡眠EXP：せいちょうのおこう */
+  sxEvent: 1,         /* 睡眠EXP：イベントの倍率 */
+  sxScore: 100,       /* 睡眠EXP：いつもの睡眠スコア */
+  sxMinScore: 18,     /* 睡眠EXP：1回の最低スコア（90分寝ないと記録されないため） */
+  qkScore: 100,       /* 睡眠EXP早見：睡眠スコア */
+  qkNature: "normal", /* 睡眠EXP早見：性格補正 */
+  qkBonus: 0,         /* 睡眠EXP早見：睡眠EXPボーナス持ちの数 */
+  qkIncense: false,   /* 睡眠EXP早見：せいちょうのおこう */
+  qkEvent: 1          /* 睡眠EXP早見：イベントの倍率 */
 };
 
-var TAB_NAMES = ["calc", "rev", "nap", "plan"];
+var TAB_NAMES = ["calc", "rev", "sleep", "nap", "plan"];
+var SX_EVENTS = [1, 1.5, 2, 3];
 
 function $(id) { return document.getElementById(id); }
 function fmt(n) { return Math.round(n).toLocaleString("ja-JP"); }
@@ -1115,7 +1370,13 @@ function saveState() {
       tab: state.tab,
       rvCur: state.rvCur, rvCarry: state.rvCarry, rvExpType: state.rvExpType,
       rvNature: state.rvNature, rvCandy: state.rvCandy,
-      rvMult: state.rvMult, rvBoostN: state.rvBoostN
+      rvMult: state.rvMult, rvBoostN: state.rvBoostN,
+      sxMode: state.sxMode, sxCur: state.sxCur, sxCarry: state.sxCarry, sxTgt: state.sxTgt,
+      sxExpType: state.sxExpType, sxRemain: state.sxRemain, sxNature: state.sxNature,
+      sxBonus: state.sxBonus, sxIncense: state.sxIncense, sxEvent: state.sxEvent,
+      sxScore: state.sxScore, sxMinScore: state.sxMinScore,
+      qkScore: state.qkScore, qkNature: state.qkNature, qkBonus: state.qkBonus,
+      qkIncense: state.qkIncense, qkEvent: state.qkEvent
     }));
   } catch (e) { /* 保存できなくても、そのまま使えるようにする */ }
   savePlan();          /* アメブ計画表は別の場所に保存する（リセットで消えないように） */
@@ -1169,6 +1430,24 @@ function loadState() {
   state.rvMult   = (m === 4 || m === 5) ? m : 0;
   state.rvBoostN = num(d.rvBoostN, 0, 99999, state.rvBoostN);
 
+  if (d.sxMode === "lv" || d.sxMode === "exp") { state.sxMode = d.sxMode; }
+  state.sxCur    = num(d.sxCur, MIN_LEVEL, MAX_LEVEL, state.sxCur);
+  state.sxCarry  = num(d.sxCarry, 0, 9999999, state.sxCarry);
+  state.sxTgt    = num(d.sxTgt, MIN_LEVEL, MAX_LEVEL, state.sxTgt);
+  if (EXP_TYPE_RATIO.hasOwnProperty(d.sxExpType)) { state.sxExpType = d.sxExpType; }
+  state.sxRemain = num(d.sxRemain, 0, 9999999, state.sxRemain);
+  if (CANDY_EXP.hasOwnProperty(d.sxNature))       { state.sxNature  = d.sxNature; }
+  state.sxBonus  = num(d.sxBonus, 0, 5, state.sxBonus);
+  state.sxIncense = (d.sxIncense === true);
+  if (SX_EVENTS.indexOf(d.sxEvent) >= 0) { state.sxEvent = d.sxEvent; }
+  state.sxScore  = num(d.sxScore, 1, 100, state.sxScore);
+  state.sxMinScore = num(d.sxMinScore, 1, 100, state.sxMinScore);
+  state.qkScore  = num(d.qkScore, 1, 100, state.qkScore);
+  if (CANDY_EXP.hasOwnProperty(d.qkNature)) { state.qkNature = d.qkNature; }
+  state.qkBonus  = num(d.qkBonus, 0, 5, state.qkBonus);
+  state.qkIncense = (d.qkIncense === true);
+  if (SX_EVENTS.indexOf(d.qkEvent) >= 0) { state.qkEvent = d.qkEvent; }
+
   /* ものひろい箱は 1・3・5 だけが入っているはずなので、それ以外は捨てる */
   if (Object.prototype.toString.call(d.napBox) === "[object Array]") {
     var box = [];
@@ -1200,6 +1479,21 @@ function applyStateToScreen() {
   pickSeg("rvBoostGroup",  state.rvMult);
   $("rvCandy").value  = String(state.rvCandy);
   $("rvBoostN").value = String(state.rvBoostN);
+  pickSeg("sxModeGroup",  state.sxMode);
+  pickSeg("sxExpGroup",   state.sxExpType);
+  pickSeg("sxNatGroup",   state.sxNature);
+  pickSeg("sxBonusGroup", state.sxBonus);
+  pickSeg("sxEventGroup", state.sxEvent);
+  $("sxCur").value      = String(state.sxCur);
+  $("sxTgt").value      = String(state.sxTgt);
+  $("sxRemain").value   = String(state.sxRemain);
+  $("sxScore").value    = String(state.sxScore);
+  $("sxMinScore").value = String(state.sxMinScore);
+  pickSeg("qkNatGroup",   state.qkNature);
+  pickSeg("qkBonusGroup", state.qkBonus);
+  pickSeg("qkEventGroup", state.qkEvent);
+  $("qkIncense").checked = state.qkIncense;
+  $("sxIncense").checked = state.sxIncense;
 
   $("boostChk").checked  = state.boost;
   $("miniChk").checked   = state.mini;
@@ -1764,6 +2058,341 @@ function renderReverse() {
 }
 
 /* =========================================================================
+   5-3-2. 睡眠EXP（あと何回寝たら目標のレベルに届くか）
+   睡眠EXP ＝ 睡眠スコア × 性格補正 × 睡眠EXPボーナス補正 × せいちょうのおこう × イベント倍率
+   （出典：ポケモンスリープ攻略・検証 Wiki*「育成/レベル」）
+   端数の扱いは確かな情報がないので、少なめ（安全側）になる「切り捨て」で計算している。
+   ========================================================================= */
+
+var SX_NATURE = { down: 0.82, normal: 1, up: 1.18 };   /* 睡眠EXPの性格補正（アメと同じ倍率） */
+var SX_BONUS_RATE = 0.14;                              /* 睡眠EXPボーナス1匹ぶん */
+
+/* 条件 p（nature / bonus / incense / event）での、睡眠EXPの倍率（スコア1点で何EXPか） */
+function sxMultOf(p) {
+  return SX_NATURE[p.nature] * (1 + SX_BONUS_RATE * p.bonus) * (p.incense ? 2 : 1) * p.event;
+}
+
+/* 「あと何回寝たら届く？」の条件 */
+function sxCond() {
+  return { nature: state.sxNature, bonus: state.sxBonus, incense: state.sxIncense, event: state.sxEvent };
+}
+/* 「睡眠EXP早見」の条件 */
+function qkCond() {
+  return { nature: state.qkNature, bonus: state.qkBonus, incense: state.qkIncense, event: state.qkEvent };
+}
+
+function sxMult() { return sxMultOf(sxCond()); }
+
+/* 睡眠スコア s 点でもらえる睡眠EXP（1e-9 は 1.14×100＝113.99999… のような計算のずれをふせぐため） */
+function sleepExp(s, m) { return Math.floor(s * m + 1e-9); }
+
+/* n 回に分けて寝て、合わせて need EXP 以上もらうには、1回あたり何点いるか（100点でも足りなければ 0） */
+function sxMinScore(need, n, m) {
+  for (var s = 1; s <= 100; s++) {
+    if (n * sleepExp(s, m) >= need) { return s; }
+  }
+  return 0;
+}
+
+/* 1回 s 点を n 回寝るのに、最短で何日かかるか。
+   1日に計測できるのは2回まで、スコアは2回あわせて100点まで。 */
+function sxDays(n, s) { return (s <= 50) ? Math.ceil(n / 2) : n; }
+
+/* いろいろな点数の回を、最短何日でこなせるか（1日2回まで・2回あわせて100点まで）。
+   小さい点数と大きい点数を同じ日に組み合わせられるだけ組み合わせる */
+function sxDaysMixed(scores) {
+  var a = scores.slice().sort(function (x, y) { return x - y; });
+  var i = 0, j = a.length - 1, days = 0;
+  while (i <= j) {
+    if (i < j && a[i] + a[j] <= 100) { i++; }   /* いちばん小さい回を、いちばん大きい回と同じ日に */
+    j--; days++;
+  }
+  return days;
+}
+
+/*
+  あまりなしで上げきる組み合わせを探す。
+  1回の睡眠スコアは minS〜100 点。残りEXPにぴったり届く組み合わせのうち、いちばん回数が少ないものを返す。
+  ぴったりが無理なら（おこうで偶数のEXPしか出ない、など）、いちばんあまりが少ないもの。
+    返り値: { scores: [各回の点数（大きい順）], exps: [各回のEXP], over: あまりのEXP }
+  多くの回は100点になるので、はじめに100点の回をまとめて引いておき、
+  残りの少しだけを「ちょうど作れるか」の表（動的計画法）で調べる。
+*/
+function sxExactPlan(remain, m, minS) {
+  var full = sleepExp(100, m);
+  if (full <= 0) { return null; }
+
+  /* EXPの値ごとに、それを出せるいちばん低い点数を覚えておく（同じEXPなら短い睡眠で済む方） */
+  var vals = [], scoreOf = {};
+  for (var s = minS; s <= 100; s++) {
+    var v = sleepExp(s, m);
+    if (v > 0 && scoreOf[v] === undefined) { scoreOf[v] = s; vals.push(v); }
+  }
+  vals.sort(function (x, y) { return y - x; });  /* 同じ回数なら、大きいEXPの回を使う方を選ぶ */
+
+  var q = Math.max(0, Math.ceil(remain / full) - 4);   /* 先に引いておく100点の回 */
+  var rest = remain - q * full;
+  var CAP = rest + full, INF = 1 << 28;
+  var dp = new Int32Array(CAP + 1), pick = new Int32Array(CAP + 1);
+  for (var x = 1; x <= CAP; x++) {
+    dp[x] = INF;
+    for (var k = 0; k < vals.length; k++) {
+      var w = vals[k];
+      if (w <= x && dp[x - w] + 1 < dp[x]) { dp[x] = dp[x - w] + 1; pick[x] = w; }
+    }
+  }
+
+  /* 残り以上で、いちばんあまりが少ない合計を選ぶ */
+  var target = -1;
+  for (var t = rest; t <= CAP; t++) { if (dp[t] < INF) { target = t; break; } }
+  if (target < 0) { return null; }
+
+  var exps = [];
+  for (var c = 0; c < q; c++) { exps.push(full); }
+  for (var r = target; r > 0; r -= pick[r]) { exps.push(pick[r]); }
+  exps.sort(function (x, y) { return y - x; });
+  var scores = [];
+  for (var e = 0; e < exps.length; e++) { scores.push(scoreOf[exps[e]]); }
+  return { scores: scores, exps: exps, over: target - rest };
+}
+
+/* 点数の並びを「100点 × 2回 ＋ 27点 × 1回」の形にする（EXPの並びも同じ形で） */
+function sxGroupText(list, unit) {
+  var out = [], i = 0;
+  while (i < list.length) {
+    var j = i;
+    while (j < list.length && list[j] === list[i]) { j++; }
+    out.push('<span class="nw">' + fmt(list[i]) + unit + ' × ' + (j - i) + '回</span>');
+    i = j;
+  }
+  return out.join(" ＋ ");
+}
+
+function renderSleep() {
+  var lvMode = (state.sxMode === "lv");
+  $("sxLvBox").hidden  = !lvMode;
+  $("sxExpBox").hidden = lvMode;
+  var box = $("sxAnswer");
+
+  /* ---- 目標までの残りEXP ---- */
+  var remain;
+  if (lvMode) {
+    /* 「あと ◯◯」の欄（レベル計算タブと同じしくみ） */
+    var need = (state.sxCur < MAX_LEVEL) ? expToNext(state.sxCur, state.sxExpType) : 0;
+    if (state.sxCarry > Math.max(need - 1, 0)) { state.sxCarry = Math.max(need - 1, 0); }
+    $("sxExpMax").textContent = (need > 0) ? fmt(need) : "－";
+    $("sxExp").disabled = (need === 0);
+    if (document.activeElement !== $("sxExp")) {
+      $("sxExp").value = (need > 0) ? String(need - state.sxCarry) : "0";
+    }
+    if (state.sxTgt <= state.sxCur) {
+      box.innerHTML = '<div class="answer warn">目標のレベルを、今のレベルより上にしてください。</div>';
+      return;
+    }
+    remain = Math.max(totalRequiredExp(state.sxCur, state.sxTgt, state.sxExpType) - state.sxCarry, 0);
+  } else {
+    remain = state.sxRemain;
+  }
+  if (remain <= 0) {
+    box.innerHTML = '<div class="answer">もう目標に届いています。</div>';
+    return;
+  }
+
+  var m = sxMult();
+  var full = sleepExp(100, m);                 /* スコア100点（1日の上限）でもらえるEXP */
+  var s = state.sxScore;
+  var per = sleepExp(s, m);                    /* いつものスコアでもらえるEXP */
+
+  /* 倍率の内訳 */
+  var parts = [];
+  if (state.sxNature !== "normal") { parts.push("性格" + NATURE_MARK[state.sxNature] + "×" + SX_NATURE[state.sxNature]); }
+  if (state.sxBonus > 0) { parts.push("ボーナス" + state.sxBonus + "匹×" + (1 + SX_BONUS_RATE * state.sxBonus).toFixed(2).replace(/0$/, "")); }
+  if (state.sxIncense)   { parts.push("おこう×2"); }
+  if (state.sxEvent > 1) { parts.push("イベント×" + state.sxEvent); }
+
+  var h = '<div class="answer">' +
+    '<div class="sx-head">' +
+      '<div class="t">目標' + (lvMode ? '（Lv.' + state.sxTgt + '）' : '') + 'まで</div>' +
+      '<div class="sx-big">あと <span class="num">' + fmt(remain) + '</span> EXP</div>' +
+      '<div class="sx-sub">倍率 ×' + (Math.round(m * 10000) / 10000) +
+        (parts.length ? '（' + parts.join("・") + '）' : '（補正なし）') + '<br />' +
+        'スコア100点で <b>' + fmt(full) + '</b> EXP' +
+        (s !== 100 ? '／' + s + '点で <b>' + fmt(per) + '</b> EXP' : '') + '</div>' +
+    '</div>';
+
+  /* ---- ① いつものスコアなら、あと何回 ---- */
+  if (per > 0) {
+    var times = Math.ceil(remain / per);
+    h += '<div class="sx-box">' +
+         '<div class="t">いつもの ' + s + ' 点で寝るなら</div>' +
+         '<div class="b">あと <span class="num">' + fmt(times) + ' 回</span></div>' +
+         '<div class="sx-sub">最短 ' + fmt(sxDays(times, s)) + ' 日' +
+         (s <= 50 ? '（1日2回計測した場合）' : '') +
+         '／' + fmt(times * per - remain) + ' EXP あまる</div>' +
+         '</div>';
+  } else {
+    h += '<div class="sx-box"><div class="sx-sub">' + s + ' 点だと睡眠EXPが0になります。スコアを上げてください。</div></div>';
+  }
+
+  /* ---- ② あまりなしで上げきるには ---- */
+  var minS = state.sxMinScore;
+  var ex = sxExactPlan(remain, m, minS);
+  if (ex) {
+    h += '<div class="sx-box' + (ex.over === 0 ? ' sx-exact' : '') + '">' +
+         '<div class="t">' + (ex.over === 0 ? 'あまりなしで上げきるには' : 'いちばんあまりが少ないのは') + '</div>' +
+         '<div class="b">' + sxGroupText(ex.scores, '点') + '</div>' +
+         '<div class="sx-sub">' + sxGroupText(ex.exps, ' EXP') + ' ＝ ' + fmt(remain + ex.over) + ' EXP' +
+         (ex.over === 0 ? '（<b>ぴったり</b>）' : '（' + fmt(ex.over) + ' EXP あまる）') + '<br />' +
+         '合わせて ' + ex.scores.length + ' 回（最短 ' + fmt(sxDaysMixed(ex.scores)) + ' 日）</div>' +
+         (ex.over > 0 ? '<div class="sx-sub">いまの倍率では、どう組み合わせてもぴったりにはなりません。</div>' : '') +
+         '<div class="sx-sub">※その点数<b>ちょうど</b>で起きる必要があります（1点ちがうとEXPも変わります）。' +
+         minS + '点より低い回は使っていません。</div>' +
+         '</div>';
+  }
+
+  /* ---- ③ いちばん少ない回数での分け方（逆算） ---- */
+  var k = Math.ceil(remain / full);            /* 100点で寝続けたときの回数 */
+  var lastNeed = remain - (k - 1) * full;      /* 最後の1回でもらう必要があるEXP */
+  var lastScore = Math.max(sxMinScore(lastNeed, 1, m), minS);
+  h += '<div class="sx-box">' +
+       '<div class="t">いちばん少ない回数なら</div>' +
+       '<div class="b">' +
+       (k > 1 ? '<span class="nw">100点 × ' + fmt(k - 1) + '回</span> ＋ ' : '') +
+       '<span class="nw"><span class="num">' + lastScore + '点</span>以上 × 1回</span></div>' +
+       '<div class="sx-sub">合わせて ' + fmt(k) + ' 回（最短 ' + fmt(k) + ' 日）</div>' +
+       '</div>';
+
+  /* ---- ④ ◯回に分けるなら、1回何点 ---- */
+  var t = '<tr><th>分ける回数</th><th>1回の点数</th><th>EXP</th><th>最短</th></tr>';
+  var rowsShown = 0;
+  for (var n = Math.max(k, 1); n <= k + 6 && rowsShown < 6; n++) {
+    var sc = sxMinScore(remain, n, m);
+    if (sc === 0) { continue; }
+    if (sc < minS) { sc = minS; }              /* 最低スコアより低い回はできない */
+    t += '<tr><td>' + n + ' 回</td><td>' + sc + ' 点以上</td>' +
+         '<td>' + fmt(sleepExp(sc, m)) + '×' + n + '</td>' +
+         '<td>' + fmt(sxDays(n, sc)) + ' 日</td></tr>';
+    rowsShown++;
+    if (sc === minS) { break; }                /* 最低スコアで足りるなら、それ以上分けても同じ */
+  }
+  h += '<div class="scroll-x"><table class="cmp">' + t + '</table></div>' +
+       '<div class="sx-sub" style="margin-top:6px">※1日に計測できるのは2回まで、睡眠スコアは2回あわせて100点まで（午前4時に日付が変わります）。' +
+       '1回50点以下なら1日に2回寝られるので、日数が半分になります。</div>';
+
+  /* ---- ⑤ レベルで入れたときは、寝るたびに何レベルになるか ---- */
+  if (lvMode && per > 0) {
+    var p = '<tr><th>寝た回数</th><th>もらったEXP</th><th>レベル</th></tr>';
+    var maxRow = Math.min(Math.ceil(remain / per), 10);
+    for (var i = 1; i <= maxRow; i++) {
+      var st = applyExp(state.sxCur, state.sxCarry + i * per, MAX_LEVEL, state.sxExpType);
+      var nx = (st.level < MAX_LEVEL) ? expToNext(st.level, state.sxExpType) - st.carry : 0;
+      p += '<tr' + (st.level >= state.sxTgt ? ' style="background:#f0fdf4"' : '') + '>' +
+           '<td>' + i + ' 回目</td><td>' + fmt(i * per) + '</td>' +
+           '<td>Lv.' + st.level + (nx > 0 ? '（あと ' + fmt(nx) + '）' : '') +
+           (st.level >= state.sxTgt ? ' ✓' : '') + '</td></tr>';
+    }
+    h += '<div class="t" style="margin-top:14px;font-size:0.88rem">いつもの ' + s + ' 点で寝ていくと</div>' +
+         '<div class="scroll-x"><table class="cmp">' + p + '</table></div>' +
+         (Math.ceil(remain / per) > 10 ? '<div class="sx-sub">（11回目からは省略）</div>' : '');
+  }
+
+  h += '<div class="sx-sub" style="margin-top:8px">※端数は切り捨てとして計算しています。ゲームの数字と1くらいずれることがあります。</div>' +
+       '</div>';
+  box.innerHTML = h;
+}
+
+/* 小数を見やすく（最大2けた。113.999999… のような計算のずれも丸める） */
+function sxNum(x) {
+  return (Math.round(x * 100) / 100).toLocaleString("ja-JP", { maximumFractionDigits: 2 });
+}
+
+/*
+  計算式の表。スコアから順番に掛けていき、1段ごとの途中の数を見せる。
+  おこうは最後に2倍する（掛け算なので、どの順番で掛けても答えは同じ）。
+    cols : 列にするスコアの並び（例：[100]）
+    p    : 条件（nature / bonus / incense / event）
+*/
+function sxFormulaHtml(cols, p) {
+  var steps = [
+    ["性格補正", SX_NATURE[p.nature],
+      p.nature === "normal" ? "-（補正なし）" : NATURE_MARK[p.nature]],
+    ["睡眠EXPボーナス", 1 + SX_BONUS_RATE * p.bonus,
+      p.bonus > 0 ? p.bonus + "匹 → 1 ＋ 0.14×" + p.bonus : "なし"],
+    ["イベント", p.event, p.event > 1 ? "" : "なし"],
+    ["せいちょうのおこう", p.incense ? 2 : 1, p.incense ? "最後に2倍" : "なし"]
+  ];
+
+  /* スマホでも横にはみ出さないよう、倍率は左の列にまとめて書く */
+  var t = '<tr><th style="text-align:left">計算</th>';
+  for (var c = 0; c < cols.length; c++) { t += '<th>' + cols[c] + '点</th>'; }
+  t += '</tr>';
+
+  /* 1行目：睡眠スコア */
+  t += '<tr><td class="name">睡眠スコア</td>';
+  for (c = 0; c < cols.length; c++) { t += '<td>' + cols[c] + '</td>'; }
+  t += '</tr>';
+
+  /* 2行目から：1つずつ掛けていく */
+  var cur = cols.slice();
+  for (var i = 0; i < steps.length; i++) {
+    var st = steps[i];
+    t += '<tr><td class="name"><b class="sx-rate">×' + sxNum(st[1]) + '</b> ' + st[0] +
+         (st[2] ? '<br /><span class="sx-sub">' + st[2] + '</span>' : '') + '</td>';
+    for (c = 0; c < cols.length; c++) {
+      cur[c] = cur[c] * st[1];
+      t += '<td>' + sxNum(cur[c]) + '</td>';
+    }
+    t += '</tr>';
+  }
+
+  /* 最後：端数を切り捨てた、もらえるEXP */
+  t += '<tr style="background:var(--soft)"><td class="name"><b>もらえるEXP</b><br /><span class="sx-sub">端数を切り捨て</span></td>';
+  for (c = 0; c < cols.length; c++) { t += '<td><b>' + fmt(sleepExp(cols[c], sxMultOf(p))) + '</b></td>'; }
+  t += '</tr>';
+
+  return '<div style="margin-top:16px;font-size:0.95rem">計算式</div>' +
+         '<div class="sx-sub">睡眠EXP ＝ 睡眠スコア × 性格補正 × 睡眠EXPボーナス × イベント × おこう</div>' +
+         '<div class="scroll-x"><table class="cmp sx-formula">' + t + '</table></div>';
+}
+
+/* ---- 睡眠EXP早見（ぽちぽち計算） ---- */
+var QK_EVENT_LABEL = { 1: "なし", 1.5: "1.5倍", 2: "2倍", 3: "3倍" };
+
+function renderQuick() {
+  var p = qkCond(), s = state.qkScore;
+  if (document.activeElement !== $("qkScore")) { $("qkScore").value = String(s); }
+  pickSeg("qkScoreGroup", s);                  /* 100/90/… の早押しは、同じ点数のときだけ印が付く */
+
+  /* いまの条件の答え */
+  var h = '<div class="answer">' +
+          '<div class="qk-big">' + s + '点 → <span class="num">' + fmt(sleepExp(s, sxMultOf(p))) + '</span> EXP</div>' +
+          '<div class="sx-sub" style="text-align:center">倍率 ×' + (Math.round(sxMultOf(p) * 10000) / 10000) + '</div>';
+
+  /* 早見表：ボーナス持ち 0〜5匹 × イベント倍率。性格・おこう・スコアは上で選んだもの */
+  var t = '<tr><th>ボーナス</th>';
+  for (var e = 0; e < SX_EVENTS.length; e++) { t += '<th>' + QK_EVENT_LABEL[SX_EVENTS[e]] + '</th>'; }
+  t += '</tr>';
+  for (var b = 0; b <= 5; b++) {
+    t += '<tr><th>' + b + '匹</th>';
+    for (e = 0; e < SX_EVENTS.length; e++) {
+      var q = { nature: p.nature, bonus: b, incense: p.incense, event: SX_EVENTS[e] };
+      var on = (b === p.bonus && SX_EVENTS[e] === p.event);
+      t += '<td class="cell' + (on ? ' on' : '') + '" data-b="' + b + '" data-e="' + SX_EVENTS[e] + '">' +
+           fmt(sleepExp(s, sxMultOf(q))) + '</td>';
+    }
+    t += '</tr>';
+  }
+  h += '<div style="margin-top:14px;font-size:0.95rem">早見表（' + s + '点' +
+       '・性格 ' + NATURE_MARK[p.nature] + (p.incense ? '・おこうあり' : '') + '）</div>' +
+       '<div class="sx-sub">マスを押すと、その条件に切りかわります。2倍＝GSDの満月の前後、3倍＝満月。</div>' +
+       '<div class="scroll-x"><table class="cmp qk-table" id="qkTable">' + t + '</table></div>';
+
+  h += sxFormulaHtml([s], p);
+  h += '<div class="sx-sub" style="margin-top:8px">※端数は切り捨てとして計算しています。</div></div>';
+  $("qkAnswer").innerHTML = h;
+}
+
+/* =========================================================================
    5-4. アメブ計画表
    ホリデーのアメブースト（3,500個まで／ミニは350個まで）を、
    どのポケモンに何個使うか計画して、この端末に覚えておく。
@@ -2263,7 +2892,7 @@ function showTab(name) {
   $("resetRow").hidden = (name === "plan");   /* 計画表のタブには専用の「消す」ボタンがある */
 }
 
-function renderAll() { renderMain(); renderTsurukame(); renderNap(); renderReverse(); renderPlan(false); }
+function renderAll() { renderMain(); renderTsurukame(); renderNap(); renderReverse(); renderSleep(); renderQuick(); renderPlan(false); }
 
 /* =========================================================================
    6. ボタンやスライダーの動作
@@ -2463,6 +3092,81 @@ $("rvBoostN").oninput = function () {
   state.rvBoostN = toInt(this.value, 0, 99999, 0);
   renderReverse();
 };
+
+/* ---- 睡眠EXP ---- */
+setupGroup("sxModeGroup",  function (v) { state.sxMode = v; });
+setupGroup("sxExpGroup",   function (v) { state.sxExpType = v; });
+setupGroup("sxNatGroup",   function (v) { state.sxNature = v; });
+setupGroup("sxBonusGroup", function (v) { state.sxBonus = parseInt(v, 10); });
+setupGroup("sxEventGroup", function (v) { state.sxEvent = parseFloat(v); });
+setupHelp("sxBonusHelpBtn", "sxBonusHelp");
+setupHelp("sxEventHelpBtn", "sxEventHelp");
+$("sxIncense").onchange = function () { state.sxIncense = this.checked; renderSleep(); };
+
+/* 数字の欄。打っている途中は欄を書きかえず、入力が終わったら（change）範囲内に直した値を出す */
+function setupSxNum(id, key, min, max) {
+  var el = $(id);
+  el.oninput = function () {
+    state[key] = toInt(this.value, min, max, state[key]);
+    renderSleep();
+  };
+  el.onchange = function () { this.value = String(state[key]); };
+}
+setupSxNum("sxCur",    "sxCur",    MIN_LEVEL, MAX_LEVEL);
+setupSxNum("sxTgt",    "sxTgt",    MIN_LEVEL, MAX_LEVEL);
+setupSxNum("sxRemain", "sxRemain", 0, 9999999);
+setupSxNum("sxScore",  "sxScore",  1, 100);
+setupSxNum("sxMinScore", "sxMinScore", 1, 100);
+setupHelp("sxMinHelpBtn", "sxMinHelp");
+
+/* 「あと ◯◯」の欄（レベル計算タブの欄と同じ動き） */
+$("sxExp").oninput = function () {
+  var digits = this.value.replace(/[^0-9]/g, "");
+  var need = (state.sxCur < MAX_LEVEL) ? expToNext(state.sxCur, state.sxExpType) : 0;
+  var n = parseInt(digits, 10);
+  if (isNaN(n)) { n = need; }
+  if (n > need) { n = need; }
+  state.sxCarry = need - Math.max(n, 1);
+  if (digits !== this.value || n !== parseInt(digits, 10)) { this.value = String(n); }
+  renderSleep();
+};
+$("sxExp").onblur = function () {
+  var need = (state.sxCur < MAX_LEVEL) ? expToNext(state.sxCur, state.sxExpType) : 0;
+  this.value = String(need - state.sxCarry);
+};
+$("sxExp").onfocus = function () { this.select(); };
+
+/* ---- 睡眠EXP早見（ぽちぽち計算） ---- */
+setupGroup("qkScoreGroup", function (v) { state.qkScore = parseInt(v, 10); });
+setupGroup("qkNatGroup",   function (v) { state.qkNature = v; });
+setupGroup("qkBonusGroup", function (v) { state.qkBonus = parseInt(v, 10); });
+setupGroup("qkEventGroup", function (v) { state.qkEvent = parseFloat(v); });
+$("qkIncense").onchange = function () { state.qkIncense = this.checked; renderQuick(); };
+setupSxNum("qkScore", "qkScore", 1, 100);
+$("qkScore").oninput = function () {         /* setupSxNum は上の計算を出し直すので、早見のほうに差しかえる */
+  state.qkScore = toInt(this.value, 1, 100, state.qkScore);
+  renderQuick();
+};
+
+/* −5／−1／＋1／＋5 */
+var qkSteps = document.querySelectorAll(".qk-step");
+for (var qi = 0; qi < qkSteps.length; qi++) {
+  qkSteps[qi].onclick = function () {
+    state.qkScore = Math.min(Math.max(state.qkScore + parseInt(this.getAttribute("data-step"), 10), 1), 100);
+    renderQuick();
+  };
+}
+
+/* 早見表のマスを押したら、そのボーナス数・イベント倍率に切りかえる */
+$("qkAnswer").addEventListener("click", function (e) {
+  var cell = e.target.closest("td.cell");
+  if (!cell) { return; }
+  state.qkBonus = parseInt(cell.getAttribute("data-b"), 10);
+  state.qkEvent = parseFloat(cell.getAttribute("data-e"));
+  pickSeg("qkBonusGroup", state.qkBonus);
+  pickSeg("qkEventGroup", state.qkEvent);
+  renderQuick();
+});
 
 /* ---- アメブ計画表：設定 ---- */
 $("planTitle").oninput = function () { plan.title = this.value.slice(0, 30); };
